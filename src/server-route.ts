@@ -3,6 +3,7 @@ import extractJWT from './middleware/extractJWT';
 import AuthRouter from './router/auth.router';
 import ClientRouter from './router/client.router';
 import CommentRouter from './router/comment.router';
+import CountryRouter from './router/country.router';
 import UserRouter from './router/user.router';
 
 export default class ServerRoute {
@@ -12,12 +13,15 @@ export default class ServerRoute {
     private userRouter: UserRouter;
     private authRouter: AuthRouter;
     private commentRouter: CommentRouter;
+    private countryRouter: CountryRouter;
 
     private constructor() {
         this.clientRouter = new ClientRouter();
         this.userRouter = new UserRouter();
         this.authRouter = new AuthRouter();
         this.commentRouter = new CommentRouter();
+        this.countryRouter = new CountryRouter();
+
     }
 
     public static getInstance(): ServerRoute {
@@ -32,9 +36,10 @@ export default class ServerRoute {
          * 
          */
 
+        expressApp.use('/auth', this.authRouter.router);
         expressApp.use('/client', extractJWT, this.clientRouter.router);
         expressApp.use('/user', extractJWT, this.userRouter.router);
         expressApp.use('/comment', extractJWT, this.commentRouter.router);
-        expressApp.use('/auth', this.authRouter.router);
+        expressApp.use('/country', this.countryRouter.router);
     }
 }

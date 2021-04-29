@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
-import UserTask from "../task/user.task";
+import CountryTask from "../task/country.task";
 import { ResponseModel } from "../models/response.model";
 import logging from "../config/logging";
 
-const NAMESPACE = 'USER';
-export default class UserService {
-    private userTask: UserTask;
+const NAMESPACE = 'COUNTRY';
+
+export default class CountryService {
+    private countryTask: CountryTask;
     constructor() {
-        this.userTask = new UserTask();
+        this.countryTask = new CountryTask();
     }
 
     public create(req: Request, res: Response) {
 
-        const payLoad = req.body;
+        const payLoad = req?.body;
 
-        this.userTask.create(payLoad)
+        this.countryTask.create(payLoad)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -36,7 +37,7 @@ export default class UserService {
     }
 
     public getAll(req: Request, res: Response) {
-        this.userTask.getAll(req.query)
+        this.countryTask.getAll(req.query)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -57,15 +58,16 @@ export default class UserService {
                 return res.status(500).json(errorData)
             });
     }
+    
     public delete(req: Request, res: Response) {
-        this.userTask.delete(req.params.userId)
+        this.countryTask.delete(req.params.countryId)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
                     code: response?.status ?? 500,
                     message: response?.msg
                 }
-                logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `CountryService.delete ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -74,7 +76,7 @@ export default class UserService {
                     code: err.status ?? 500,
                     data: err.msg ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
+                logging.error(NAMESPACE, `CountryService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }

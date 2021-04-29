@@ -5,9 +5,13 @@ import { ClientModel } from '../models/client.model';
 import logging from '../config/logging';
 const NAMESPACE = 'CLIENT'
 export default class ClientTask {
-    constructor() {
-    }
+   
+    private mongoConnection: any;
 
+    constructor() {
+        this.mongoConnection = DbClient.getInstance();
+
+    }
     create(data: any) {
         return new Promise((resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
@@ -16,7 +20,7 @@ export default class ClientTask {
 
             let payLoad: ClientModel = new ClientModel(data);
             logging.info(NAMESPACE, `ClientTask.create`, payLoad);
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('client').insertOne(payLoad, function (err: any, res: any) {
@@ -29,7 +33,7 @@ export default class ClientTask {
                         resolve(error)
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }
@@ -42,7 +46,7 @@ export default class ClientTask {
             ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
             : {}
         return new Promise((resolve, reject) => {
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('client').find(field,
@@ -56,7 +60,7 @@ export default class ClientTask {
                         logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }
@@ -66,7 +70,7 @@ export default class ClientTask {
             if (!clientId) {
                 reject('Client Id is required');
             }
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('client').find({ _id: new ObjectID(clientId) },
@@ -84,7 +88,7 @@ export default class ClientTask {
                         logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }
@@ -99,7 +103,7 @@ export default class ClientTask {
             let payLoad: ClientModel = new ClientModel(data);
             logging.info(NAMESPACE, `ClientTask.delete`, JSON.stringify(payLoad));
 
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('client').updateOne(
@@ -120,7 +124,7 @@ export default class ClientTask {
                         logging.info(NAMESPACE, `Unable to connect to db :`, JSON.stringify(error));
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }
@@ -131,7 +135,7 @@ export default class ClientTask {
             if (!clientId) reject('Client Id is required');
             logging.info(NAMESPACE, `ClientTask.delete`, `Client Id : ${clientId}`);
 
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('client').updateOne(
@@ -153,7 +157,7 @@ export default class ClientTask {
                         logging.info(NAMESPACE, `ClientTask.delete`, error);
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }

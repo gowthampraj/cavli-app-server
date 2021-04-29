@@ -1,14 +1,14 @@
 
-import { Cursor, ObjectID } from 'mongodb';
+import { Cursor } from 'mongodb';
 import DbClient = require('../mongoclient');
-import { removeId } from '../utils/utils';
-import { ClientModel } from '../models/client.model';
 import { Comment } from '../models/comment.model';
-import mongoose from "mongoose";
-import { json } from 'body-parser';
 
 export default class CommentTask {
+    private mongoConnection: any;
+
     constructor() {
+        this.mongoConnection = DbClient.getInstance();
+
     }
 
     create(data: any) {
@@ -20,7 +20,7 @@ export default class CommentTask {
             let payLoad: Comment = new Comment(data);
             console.log('[Payload] CommentTask.createComments :' + JSON.stringify(payLoad));
 
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('comments').insertOne(payLoad, function (err: any, res: any) {
@@ -32,7 +32,7 @@ export default class CommentTask {
                         console.log("Unable to connect to db : " + JSON.stringify(error));
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }
@@ -41,7 +41,7 @@ export default class CommentTask {
     getCommentsById(clientId?: any) {
         const payload = JSON.parse(JSON.stringify({ "clientId": clientId }));
         return new Promise((resolve, reject) => {
-            DbClient.connect()
+            this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection('comments').find(payload,
@@ -54,7 +54,7 @@ export default class CommentTask {
                         console.log("Unable to connect to db : " + JSON.stringify(error));
                     }
                 })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
     }

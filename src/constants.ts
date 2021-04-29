@@ -1,5 +1,10 @@
 export default class AppConstant {
-    public static mongoUrl = "mongodb://localhost:27017"
+    public static MONGO_URL = "mongodb://localhost:27017"
+    public static DB_NAME = "lodestareduinternational"
+
+  
+
+
 }
 
-export module AppConstant {}
+export module AppConstant { }

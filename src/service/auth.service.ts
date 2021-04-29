@@ -19,9 +19,9 @@ export default class AuthService {
                     status: 'Success',
                     code: response.code ?? 200,
                     token: response.token,
-                    data: { username: response.data.username }
+                    data: { username: response.data.username, userRole: response.data.userRole }
                 }
-                logging.info(NAMESPACE,'UserService.login' , responseData);
+                logging.info(NAMESPACE, 'UserService.login', responseData);
                 return res.status(response.code ?? 200).json(responseData)
             })
             .catch((err: any) => {
@@ -30,7 +30,7 @@ export default class AuthService {
                     code: err.code ?? 500,
                     data: err.msg ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE,'UserService.login' , errorData);
+                logging.error(NAMESPACE, 'UserService.login', errorData);
                 return res.status(err.code ?? 500).json(errorData)
             });
     }

@@ -107,7 +107,7 @@ export default class ClientService {
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
-                    code: response?.status ?? 500,
+                    code: response?.status ?? 200,
                     message: response?.msg
                 }
                 logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
@@ -119,7 +119,7 @@ export default class ClientService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.warn(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
+                logging.error(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }

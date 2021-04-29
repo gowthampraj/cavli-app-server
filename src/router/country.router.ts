@@ -1,7 +1,7 @@
 import { Request, Router, Response } from "express";
-import UserService from "../service/user.service";
+import CountryService from "../service/country.service";
 
-export default class UserRouter {
+export default class CountryRouter {
 
     public router: Router;
 
@@ -13,27 +13,27 @@ export default class UserRouter {
      * name
      */
     private routes() {
-        const userService = new UserService();
+        const countryService = new CountryService();
 
         /**
          * create
          */
         this.router.post('/', (req: Request, res: Response) => {
-            userService.create(req, res);
+            countryService.create(req, res);
         });
 
         /**
-         * get all users list ?isActive=true/false
+         * get all countries list
          */
         this.router.get('/', (req: Request, res: Response) => {
-            userService.getAll(req, res);
+            countryService.getAll(req, res);
         });
 
         /**
         * delete
         */
-        this.router.delete('/:userId', (req: Request, res: Response) => {
-            userService.delete(req, res);
+        this.router.delete('/:countryId', (req: Request, res: Response) => {
+            countryService.delete(req, res);
         });
 
 

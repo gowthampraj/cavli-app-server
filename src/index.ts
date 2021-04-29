@@ -4,11 +4,7 @@ import bodyParser from 'body-parser';
 import { Request, Response } from 'express';
 import ServerRoute from './server-route';
 
-import mongoose from "mongoose";
-import config from './config/config';
-import logging from './config/logging';
-
-const NAMESPACE = ' INDEX '
+const NAMESPACE = 'INDEX'
 class Server {
 
     public expressApp = express();
@@ -40,21 +36,6 @@ class Server {
     }
 
     public routes(): void {
-
-        // const config = {
-        //     appVersion: "0.0.0"
-        // }
-
-
-        // /** Connect to Mongo */
-        // mongoose
-        //     .connect(config.mongo.url, config.mongo.options)
-        //     .then((result) => {
-        //         logging.info(NAMESPACE, 'Mongo Connected');
-        //     })
-        //     .catch((error) => {
-        //         logging.error(NAMESPACE, error.message, error);
-        //     });
 
         /**
          * Routes and Services

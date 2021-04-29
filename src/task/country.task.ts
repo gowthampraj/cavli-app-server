@@ -1,34 +1,31 @@
 import DbClient = require('../mongoclient');
-import { removeId, removePassword } from '../utils/utils';
+import { removePassword } from '../utils/utils';
 import bcryptjs from 'bcryptjs';
 import { Cursor, ObjectId } from 'mongodb';
 import logging from '../config/logging';
-import { UserModel } from '../models/user.model';
+// import { UserModel } from '../models/user.model';
+import { CountryModel } from '../models/country.model';
 
-const NAMESPACE = 'USER';
-
-export default class UserTask {
+const NAMESPACE = 'COUNTRY';
+const COLLECTION_NAME_COUNTRY = 'country';
+export default class CountryTask {
 
     private mongoConnection: any;
 
     constructor() {
         this.mongoConnection = DbClient.getInstance();
-
     }
 
 
     async create(data?: any) {
         /**
-        * search for user name
+        * search for country name
         */
-        const user: UserModel = new UserModel(data);
-        const isUserNameExist = await this.search({ username: user.username }, true);
-        if (!isUserNameExist)
-            var bcryptjsHasedPassword = await bcryptjs.hash(user.password, 1)
-
+        const country: CountryModel = new CountryModel(data);
+        const isUserNameExist = await this.search({ name: country.name }, true);
         return new Promise((resolve, reject) => {
             if (isUserNameExist) {
-                reject({ code: "400", msg: "User Name already Exist" });
+                reject({ code: "400", msg: "Country already exist" });
                 return;
             }
             if (!data || Object.keys(data).length === 0) {
@@ -39,8 +36,8 @@ export default class UserTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection('user').insertOne(
-                            { ...user, password: bcryptjsHasedPassword },
+                        connection.collection(COLLECTION_NAME_COUNTRY).insertOne(
+                            { ...country },
                             function (err: any, res: any) {
                                 if (res.insertedCount) {
                                     resolve(res.insertedCount)
@@ -55,15 +52,22 @@ export default class UserTask {
 
     };
 
+    /**
+     * Search 
+     * @param fields 
+     * @param isBoolenRes search result as boolean
+     * @returns 
+     */
     public search(fields: any, isBoolenRes?: boolean) {
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection('user').find(fields,
-                            function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    resolve(isBoolenRes ? userList?.length > 0 : userList.map(user => new UserModel(user)));
+                        connection.collection(COLLECTION_NAME_COUNTRY).find(
+                            { name: { $regex: new RegExp("^" + fields.name.toLowerCase(), "i") } },
+                            function (err: any, country: Cursor) {
+                                country.toArray().then(countryList => {
+                                    resolve(isBoolenRes ? countryList?.length > 0 : countryList.map(user => new CountryModel(user)));
                                 });
                             });
                     } catch (error) {
@@ -75,19 +79,14 @@ export default class UserTask {
     }
 
     public getAll(fields?: any) {
-        /**
-         * { isActive : boolean }
-         */
-        let field = fields?.isActive
-            ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-            : {}
+
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection('user').find(field,
-                            function (err: any, users: Cursor) {
-                                users.toArray().then((userList: any) => {
+                        connection.collection(COLLECTION_NAME_COUNTRY).find({},
+                            function (err: any, country: Cursor) {
+                                country.toArray().then((userList: any) => {
                                     userList.forEach((x: any) => {
                                         x = removePassword(x);
                                     })
@@ -103,16 +102,16 @@ export default class UserTask {
 
     }
 
-    public delete(clientId?: any) {
+    public delete(countryId?: any) {
 
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection('user').deleteOne(
-                            { _id: new ObjectId(clientId) }, function (err: any, users: any) {
-                                console.log(users);
-                                if (users.deletedCount) {
+                        connection.collection(COLLECTION_NAME_COUNTRY).deleteOne(
+                            { _id: new ObjectId(countryId) }, function (err: any, country: any) {
+                                console.log(country);
+                                if (country.deletedCount) {
                                     resolve({ status: 200, msg: "Deleted" });
                                 } else {
                                     reject({ status: 400, msg: "Something went wrong" })

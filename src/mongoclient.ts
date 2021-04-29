@@ -1,21 +1,29 @@
 import mongoose from "mongoose";
 import AppConstant from "./constants";
 class DbClient {
+    private static instance: DbClient;
 
+    private mongooseConnection: any;
+    
     constructor() {
-
+        this.mongooseConnection = mongoose.connect(
+            `${AppConstant.MONGO_URL}/${AppConstant.DB_NAME}`, { useNewUrlParser: true, useUnifiedTopology: true }
+        );
     }
     public connect() {
-        const dbName = 'lodestareduinternational'
         return new Promise((resolve, reject) => {
-            mongoose.connect(
-                `${AppConstant.mongoUrl}/${dbName}`, { useNewUrlParser: true, useUnifiedTopology: true }
-            )
-                .then(() => {
-                    resolve(mongoose.connection);
-                })
-                .catch(err => reject(`DB connection Error : ${JSON.stringify(err)}`));
+            this.mongooseConnection.then(() => {
+                resolve(mongoose.connection);
+            })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
+    }
+
+    public getInstance(): DbClient {
+        if (!DbClient.instance) {
+            DbClient.instance = new DbClient();
+        }
+        return DbClient.instance;
     }
 }
 
