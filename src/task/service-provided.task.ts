@@ -1,14 +1,13 @@
 import DbClient = require('../mongoclient');
-import { removeId, removePassword } from '../utils/utils';
-import bcryptjs from 'bcryptjs';
 import { Cursor, ObjectID, ObjectId } from 'mongodb';
 import logging from '../config/logging';
-import { UserModel } from '../models/user.model';
+import { UniversityModel } from '../models/university.model';
+import { ServiceProvided } from '../models/service-provided.model';
+import { removeId } from '../utils/utils';
 
-const NAMESPACE = 'USER';
-const COLLECTION_NAME_USER = 'user';
-
-export default class UserTask {
+const NAMESPACE = 'SERVICE_PROVIDED';
+const COLLECTION_NAME_SERVICE_PROVIDED = 'service-provided';
+export default class ServiceProvidedTask {
 
     private mongoConnection: any;
 
@@ -19,28 +18,28 @@ export default class UserTask {
 
     async create(data?: any) {
         /**
-        * search for user name
+        * search for service name
         */
-        const user: UserModel = new UserModel(data);
-        const isUserNameExist = await this.search({ username: user.username }, true);
-        if (!isUserNameExist)
-            var bcryptjsHasedPassword = await bcryptjs.hash(user.password, 1)
-
-        return new Promise((resolve, reject) => {
-            if (isUserNameExist) {
-                reject({ code: "400", msg: "User Name already Exist" });
-                return;
-            }
+        const serviceProvided: ServiceProvided = new ServiceProvided(data);
+        return new Promise(async (resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
                 reject({ msg: 'Body is required' });
                 return;
             }
 
+            const isUserNameExist = await this.search({ serviceName: serviceProvided.serviceName }, true);
+
+            if (isUserNameExist) {
+                reject({ code: "400", msg: `${serviceProvided.serviceName} already exist` });
+                return;
+            }
+
+
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).insertOne(
-                            { ...user, password: bcryptjsHasedPassword },
+                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).insertOne(
+                            { ...serviceProvided },
                             function (err: any, res: any) {
                                 if (res.insertedCount) {
                                     resolve(res.insertedCount)
@@ -55,15 +54,24 @@ export default class UserTask {
 
     };
 
-    public search(fields: any, isBoolenRes?: boolean) {
+    /**
+     * Search 
+     * @param fields 
+     * @param isBoolenRes search result as boolean
+     * @returns 
+     */
+    public search(fields: ServiceProvided, isBoolenRes?: boolean) {
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).find(fields,
-                            function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    resolve(isBoolenRes ? userList?.length > 0 : userList.map(user => new UserModel(user)));
+                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).find(
+                            {
+                                serviceName: { $regex: new RegExp("^" + fields.serviceName.toLowerCase(), "i") }
+                            },
+                            function (err: any, serviceList: Cursor) {
+                                serviceList.toArray().then(serviceListA => {
+                                    resolve(isBoolenRes ? serviceListA?.length > 0 : serviceListA.map(user => new UniversityModel(user)));
                                 });
                             });
                     } catch (error) {
@@ -75,23 +83,15 @@ export default class UserTask {
     }
 
     public getAll(fields?: any) {
-        /**
-         * { isActive : boolean }
-         */
-        let field = fields?.isActive
-            ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-            : {}
+
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).find(field,
-                            function (err: any, users: Cursor) {
-                                users.toArray().then((userList: any) => {
-                                    userList.forEach((x: any) => {
-                                        x = removePassword(x);
-                                    })
-                                    resolve(userList);
+                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).find({},
+                            function (err: any, country: Cursor) {
+                                country.toArray().then((universityList: any) => {
+                                    resolve(universityList);
                                 });
                             });
                     } catch (error) {
@@ -103,44 +103,16 @@ export default class UserTask {
 
     }
 
-    public getById(userId: any) {
-        return new Promise((resolve, reject) => {
-            if (!userId) {
-                reject('User Id is required');
-            }
-            this.mongoConnection.connect()
-                .then((connection: any) => {
-                    try {
-                        connection.collection(COLLECTION_NAME_USER).find({ _id: new ObjectID(userId) },
-                            function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    if (userList[0]) {
-                                        resolve(userList[0]);
-                                    } else {
-                                        reject(`No user found`);
-                                    }
-                                });
-                            });
-                    } catch (error) {
-                        reject(JSON.stringify(error));
-                        logging.error(NAMESPACE, 'UserTask.getById', JSON.stringify(error));
-                    }
-                })
-                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
-        });
-
-    }
-
-    public delete(clientId?: any) {
+    public delete(universityId?: any) {
 
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).deleteOne(
-                            { _id: new ObjectId(clientId) }, function (err: any, users: any) {
-                                console.log(users);
-                                if (users.deletedCount) {
+                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).deleteOne(
+                            { _id: new ObjectId(universityId) }, function (err: any, country: any) {
+
+                                if (country.deletedCount) {
                                     resolve({ status: 200, msg: "Deleted" });
                                 } else {
                                     reject({ status: 400, msg: "Something went wrong" })
@@ -158,24 +130,21 @@ export default class UserTask {
 
     public update(data: any) {
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
                 reject('Body is required');
             }
 
-            let payLoad: UserModel = new UserModel(data);
-            if (payLoad.password) {
-                const bcryptjsHasedPassword = await bcryptjs.hash(payLoad.password, 1)
-                payLoad = { ...payLoad, password: bcryptjsHasedPassword }
-            }
+            let payLoad: ServiceProvided = new ServiceProvided(data);
 
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).updateOne(
+                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).updateOne(
                             { _id: new ObjectID(payLoad._id) },
                             { $set: removeId(JSON.parse(JSON.stringify(payLoad))) },
-                            { upsert: false },
+                            { upsert: true }
+                            ,
                             function (err: any, res: any) {
                                 if (res.matchedCount) {
                                     if (res.matchedCount === res.modifiedCount) {

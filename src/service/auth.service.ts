@@ -19,7 +19,7 @@ export default class AuthService {
                     status: 'Success',
                     code: response.code ?? 200,
                     token: response.token,
-                    data: { username: response.data.username, userRole: response.data.userRole }
+                    data: { username: response.data.username, userRole: response.data.userRole, _id: response.data._id }
                 }
                 logging.info(NAMESPACE, 'UserService.login', responseData);
                 return res.status(response.code ?? 200).json(responseData)

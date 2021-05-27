@@ -26,7 +26,7 @@ export default class CommentRouter {
         /**
         * login
         */
-        this.router.get('/:commentId', (req: Request, res: Response) => {
+        this.router.get('/:clientId', (req: Request, res: Response) => {
             commentService.getCommentsById(req, res);
         });
     }

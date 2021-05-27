@@ -34,7 +34,7 @@ export default class CommentService {
     }
 
     public getCommentsById(req: Request, res: Response) {
-        const payLoad = req.params.commentId;
+        const payLoad = req.params.clientId;
         this.commentTask.getCommentsById(payLoad)
             .then((response: any) => {
                 const responseData: ResponseModel = {

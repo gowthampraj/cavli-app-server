@@ -2,7 +2,10 @@
 import { Cursor } from 'mongodb';
 import DbClient = require('../mongoclient');
 import { Comment } from '../models/comment.model';
+import logging from '../config/logging';
 
+const NAMESPACE = 'COMMENTS';
+const COLLECTION_NAME_COMMENT = 'comments';
 export default class CommentTask {
     private mongoConnection: any;
 
@@ -18,18 +21,18 @@ export default class CommentTask {
             }
 
             let payLoad: Comment = new Comment(data);
-            console.log('[Payload] CommentTask.createComments :' + JSON.stringify(payLoad));
+            logging.info(NAMESPACE, `CommentTask.create`, payLoad);
 
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection('comments').insertOne(payLoad, function (err: any, res: any) {
+                        connection.collection(COLLECTION_NAME_COMMENT).insertOne(payLoad, function (err: any, res: any) {
                             if (res.insertedCount) {
                                 resolve(res.insertedCount)
                             }
                         });
                     } catch (error) {
-                        console.log("Unable to connect to db : " + JSON.stringify(error));
+                        logging.info(NAMESPACE, `CommentTask.create`, error);
                     }
                 })
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
@@ -44,14 +47,14 @@ export default class CommentTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection('comments').find(payload,
+                        connection.collection(COLLECTION_NAME_COMMENT).find(payload,
                             function (err: any, comments: Cursor) {
                                 comments.toArray().then(commentList => {
                                     resolve(commentList);
                                 });
                             });
                     } catch (error) {
-                        console.log("Unable to connect to db : " + JSON.stringify(error));
+                        logging.info(NAMESPACE, `CommentTask.create`, error);
                     }
                 })
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));

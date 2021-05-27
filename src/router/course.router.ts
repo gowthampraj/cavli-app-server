@@ -1,5 +1,5 @@
 import { Request, Router, Response } from "express";
-import UserService from "../service/user.service";
+import CourseService from "../service/course.service";
 
 export default class UserRouter {
 
@@ -13,35 +13,34 @@ export default class UserRouter {
      * name
      */
     private routes() {
-        const userService = new UserService();
+        const courseService = new CourseService();
 
         /**
          * create
          */
         this.router.post('/', (req: Request, res: Response) => {
-            userService.create(req, res);
+            courseService.create(req, res);
         });
 
         /**
-         * get all users list
+         * get all course course
          */
         this.router.get('/', (req: Request, res: Response) => {
-            userService.getAll(req, res);
+            courseService.getAll(req, res);
         });
 
         /**
         * delete
         */
-        this.router.delete('/:userId', (req: Request, res: Response) => {
-            userService.delete(req, res);
+        this.router.delete('/:courseId', (req: Request, res: Response) => {
+            courseService.delete(req, res);
         });
 
         /**
-        * update
-        */
-         this.router.put('/', (req: Request, res: Response) => {
-            userService.update(req, res);
+         * Update
+         */
+        this.router.put('/', (req: Request, res: Response) => {
+            courseService.update(req, res);
         });
-
     }
 }

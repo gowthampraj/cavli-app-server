@@ -23,7 +23,7 @@ class Server {
         /** Rules of our API */
         this.expressApp.use((request: Request, response: Response, next) => {
             response.header('Access-Control-Allow-Origin', '*');
-            response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, userId');
             /**
              * Handle options
              */

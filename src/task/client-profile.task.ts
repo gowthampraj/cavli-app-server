@@ -1,12 +1,12 @@
 import { Cursor, ObjectID } from 'mongodb';
 import DbClient = require('../mongoclient');
 import { removeId } from '../utils/utils';
-import { ClientModel } from '../models/client.model';
 import logging from '../config/logging';
-const NAMESPACE = 'CLIENT';
-const COLLECTION_NAME_CLIENT = 'client';
+import { ClientProfileModel } from '../models/client-profile.model';
+const NAMESPACE = 'CLIENT PROFILE';
+const COLLECTION_NAME_CLIENT_PROFILE_INFO = 'client-profile';
 
-export default class ClientTask {
+export default class ClientProfileTask {
 
     private mongoConnection: any;
 
@@ -20,16 +20,17 @@ export default class ClientTask {
                 reject('Body is required')
             }
 
-            let payLoad: ClientModel = new ClientModel(data);
-            logging.info(NAMESPACE, `ClientTask.create`, payLoad);
+            const payLoad: ClientProfileModel = new ClientProfileModel(data.payLoad);
+            logging.info(NAMESPACE, `ClientProfileTask.create`, payLoad);
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).insertOne(payLoad, function (err: any, res: any) {
-                            if (res.insertedCount) {
-                                resolve({ insertedId: res.insertedId })
-                            }
-                        });
+                        connection.collection(COLLECTION_NAME_CLIENT_PROFILE_INFO)
+                            .insertOne(payLoad, function (err: any, res: any) {
+                                if (res.insertedCount) {
+                                    resolve({ insertedId: res.insertedId })
+                                }
+                            });
                     } catch (error) {
                         logging.info(NAMESPACE, `Unable to connect to db`, error);
                         resolve(error)
@@ -41,17 +42,12 @@ export default class ClientTask {
     }
 
     getAll(fields?: any) {
-        /**
-         * { isActive : boolean }
-         */
-        let field = fields?.isActive
-            ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-            : {}
+
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).find(field,
+                        connection.collection(COLLECTION_NAME_CLIENT_PROFILE_INFO).find({},
                             function (err: any, users: Cursor) {
                                 users.toArray().then(userList => {
                                     resolve(userList);
@@ -59,7 +55,7 @@ export default class ClientTask {
                             });
                     } catch (error) {
                         reject(JSON.stringify(error));
-                        logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
+                        logging.error(NAMESPACE, 'ClientProfileTask.getAll', JSON.stringify(error));
                     }
                 })
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
@@ -75,19 +71,20 @@ export default class ClientTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).find({ _id: new ObjectID(clientId) },
-                            function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    if (userList[0]) {
-                                        resolve(userList[0]);
-                                    } else {
-                                        reject(`No Client Id found`);
-                                    }
+                        connection.collection(COLLECTION_NAME_CLIENT_PROFILE_INFO)
+                            .find({ clientId },
+                                function (err: any, data: Cursor) {
+                                    data.toArray().then(list => {
+                                        if (list[0]) {
+                                            resolve(list[0]);
+                                        } else {
+                                            reject({ code: 404, msg: `No details found` });
+                                        }
+                                    });
                                 });
-                            });
                     } catch (error) {
                         reject(JSON.stringify(error));
-                        logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
+                        logging.error(NAMESPACE, 'ClientProfileTask.getAll', JSON.stringify(error));
                     }
                 })
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
@@ -102,26 +99,27 @@ export default class ClientTask {
                 reject('Body is required');
             }
 
-            let payLoad: ClientModel = new ClientModel(data);
-            logging.info(NAMESPACE, `ClientTask.delete`, JSON.stringify(payLoad));
+            const payLoad: ClientProfileModel = new ClientProfileModel(data.payLoad);
+            logging.info(NAMESPACE, `ClientProfileTask.update`, JSON.stringify(payLoad));
 
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).updateOne(
-                            { _id: new ObjectID(payLoad._id) },
-                            { $set: removeId(JSON.parse(JSON.stringify(payLoad))) },
-                            { upsert: false }
-                            ,
-                            function (err: any, res: any) {
-                                if (res.matchedCount) {
-                                    if (res.matchedCount === res.modifiedCount) {
-                                        resolve({ status: 200, msg: "Updated", id: payLoad._id });
-                                    } else resolve({ status: 400, msg: "Nothing to update" });
-                                } else {
-                                    resolve({ status: 404, msg: 'No match found' });
-                                }
-                            });
+                        connection.collection(COLLECTION_NAME_CLIENT_PROFILE_INFO)
+                            .updateOne(
+                                { _id: new ObjectID(payLoad._id) },
+                                { $set: removeId(JSON.parse(JSON.stringify(payLoad))) },
+                                { upsert: false }
+                                ,
+                                function (err: any, res: any) {
+                                    if (res.matchedCount) {
+                                        if (res.matchedCount === res.modifiedCount) {
+                                            resolve({ status: 200, msg: "Updated", id: payLoad._id });
+                                        } else resolve({ status: 400, msg: "Nothing to update" });
+                                    } else {
+                                        resolve({ status: 404, msg: 'No match found' });
+                                    }
+                                });
                     } catch (error) {
                         logging.info(NAMESPACE, `Unable to connect to db :`, JSON.stringify(error));
                     }
@@ -135,19 +133,19 @@ export default class ClientTask {
 
         return new Promise((resolve, reject) => {
             if (!clientId) reject('Client Id is required');
-            logging.info(NAMESPACE, `ClientTask.delete`, `Client Id : ${clientId}`);
+            logging.info(NAMESPACE, `ClientProfileTask.delete`, `Client Id : ${clientId}`);
 
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).updateOne(
+                        connection.collection(COLLECTION_NAME_CLIENT_PROFILE_INFO).updateOne(
                             { _id: new ObjectID(clientId) },
                             { $set: { isActive: false } },
                             { upsert: false },
                             function (err: any, res: any) {
                                 if (res.matchedCount) {
                                     if (res.matchedCount === res.modifiedCount) {
-                                        logging.info(NAMESPACE, `ClientTask.delete`, `Change status to Client Id : ${clientId}`);
+                                        logging.info(NAMESPACE, `ClientProfileTask.delete`, `Change status to Client Id : ${clientId}`);
 
                                         resolve({ status: 200, msg: "Deleted" });
                                     } else resolve({ status: 400, msg: "Nothing to update" });
@@ -156,7 +154,7 @@ export default class ClientTask {
                                 }
                             });
                     } catch (error) {
-                        logging.info(NAMESPACE, `ClientTask.delete`, error);
+                        logging.info(NAMESPACE, `ClientProfileTask.delete`, error);
                     }
                 })
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));

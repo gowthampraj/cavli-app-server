@@ -18,8 +18,14 @@ export default class AuthTask {
         const userList: UserModel[] = isUserNameExist.map((user: any) => new UserModel(user));
 
         return new Promise((resolve, reject) => {
-            if (!userList?.length) reject({ code: 400, msg: "No user found" });
-            if (!userList[0].isActive) reject({ code: 400, msg: "User is not active" });
+            if (!userList?.length) {
+                reject({ code: 400, msg: "No user found" });
+                return
+            };
+            if (!userList[0].isActive) {
+                reject({ code: 400, msg: "User is not active" });
+                return
+            };
 
             bcryptjs.compare(data.password, userList[0].password)
                 .then((isPasswordMatch: boolean) => {
@@ -32,7 +38,7 @@ export default class AuthTask {
                                 reject({ code: 400, msg: "Something went wrong!" });
                             } else if (token) {
                                 logging.info(NAMESPACE, `token for [${isUserNameExist[0]._id}] is [${token}]`);
-                                resolve({ code: 200, token: token, data: { ...removeId(isUserNameExist[0]) } })
+                                resolve({ code: 200, token: token, data: { ...isUserNameExist[0] } })
                             }
                         });
                     }

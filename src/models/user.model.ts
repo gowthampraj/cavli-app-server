@@ -4,18 +4,31 @@ export class UserModel {
     password: string;
     name?: string;
     isActive?: boolean;
-    userRole?: UserRoles
+    userRole?: UserRoles;
+    permission: Permission;
     constructor(i: UserModel) {
-        if (this._id)
+        if (i._id)
             this._id = i._id;
         this.username = i.username;
         this.password = i.password;
         this.name = i.name;
-        this.isActive = i?.isActive ?? true;
-        this.userRole = i.userRole
+        this.isActive = i.isActive ?? true;
+        this.userRole = i.userRole;
+        this.permission = new Permission(i?.permission)
     }
 }
 
 export enum UserRoles {
-    ADMIN, NORMAL,
+    ADMIN = 'ADMIN',
+    NORMAL = 'NORMAL',
+    STAFF = 'STAFF',
+}
+
+class Permission {
+    login?: boolean;
+    manage?: boolean;
+    constructor(i: Permission) {
+        this.login = i?.login || false;
+        this.manage = i?.manage || false;
+    }
 }

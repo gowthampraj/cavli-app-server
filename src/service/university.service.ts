@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
-import CountryTask from "../task/country.task";
+import UniversityTask from "../task/university.task";
 import { ResponseModel } from "../models/response.model";
 import logging from "../config/logging";
 
-const NAMESPACE = 'COUNTRY';
+const NAMESPACE = 'UNIVERSITY';
 
-export default class CountryService {
-    private countryTask: CountryTask;
+export default class UniversityService {
+    private universityTask: UniversityTask;
     constructor() {
-        this.countryTask = new CountryTask();
+        this.universityTask = new UniversityTask();
     }
 
     public create(req: Request, res: Response) {
 
         const payLoad = req?.body;
 
-        this.countryTask.create(payLoad)
+        this.universityTask.create(payLoad)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -37,7 +37,7 @@ export default class CountryService {
     }
 
     public getAll(req: Request, res: Response) {
-        this.countryTask.getAll(req.query)
+        this.universityTask.getAll(req.query)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -58,16 +58,16 @@ export default class CountryService {
                 return res.status(500).json(errorData)
             });
     }
-    
+
     public delete(req: Request, res: Response) {
-        this.countryTask.delete(req.params.countryId)
+        this.universityTask.delete(req.params.universityId)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
                     code: response?.status ?? 500,
                     message: response?.msg
                 }
-                logging.info(NAMESPACE, `CountryService.delete ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `UniversityService.delete ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -76,22 +76,21 @@ export default class CountryService {
                     code: err.status ?? 500,
                     data: err.msg ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE, `CountryService.update ${JSON.stringify(err)}`);
+                logging.error(NAMESPACE, `UniversityService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }
 
-    
     public update(req: Request, res: Response) {
         const payLoad = req.body;
-        this.countryTask.update(payLoad)
+        this.universityTask.update(payLoad)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
                     code: response?.status ?? 500,
                     message: response?.msg
                 }
-                logging.info(NAMESPACE, `CountryService.update ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `UniversityService.update ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -100,7 +99,7 @@ export default class CountryService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.warn(NAMESPACE, `CountryService.update ${JSON.stringify(err)}`);
+                logging.warn(NAMESPACE, `UniversityService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }

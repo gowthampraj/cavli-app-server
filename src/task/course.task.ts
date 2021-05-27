@@ -1,46 +1,45 @@
 import DbClient = require('../mongoclient');
 import { removeId, removePassword } from '../utils/utils';
-import bcryptjs from 'bcryptjs';
 import { Cursor, ObjectID, ObjectId } from 'mongodb';
 import logging from '../config/logging';
-import { UserModel } from '../models/user.model';
+import { CourseModel } from '../models/course.model';
 
-const NAMESPACE = 'USER';
-const COLLECTION_NAME_USER = 'user';
+const NAMESPACE = 'COURSE';
+const COLLECTION_NAME_COURSE = 'course';
 
-export default class UserTask {
+export default class CourseTask {
 
     private mongoConnection: any;
 
     constructor() {
         this.mongoConnection = DbClient.getInstance();
+
     }
 
 
-    async create(data?: any) {
+    create(data?: any) {
         /**
-        * search for user name
+        * search for course name
         */
-        const user: UserModel = new UserModel(data);
-        const isUserNameExist = await this.search({ username: user.username }, true);
-        if (!isUserNameExist)
-            var bcryptjsHasedPassword = await bcryptjs.hash(user.password, 1)
-
-        return new Promise((resolve, reject) => {
-            if (isUserNameExist) {
-                reject({ code: "400", msg: "User Name already Exist" });
-                return;
-            }
+        return new Promise(async (resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
                 reject({ msg: 'Body is required' });
                 return;
             }
 
+            const course: CourseModel = new CourseModel(data);
+            const isCourseNameExist = await this.search({ name: course.name }, true);
+            if (isCourseNameExist) {
+                reject({ code: "400", msg: "Course already Exist" });
+                return;
+            }
+
+
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).insertOne(
-                            { ...user, password: bcryptjsHasedPassword },
+                        connection.collection(COLLECTION_NAME_COURSE).insertOne(
+                            course,
                             function (err: any, res: any) {
                                 if (res.insertedCount) {
                                     resolve(res.insertedCount)
@@ -60,10 +59,10 @@ export default class UserTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).find(fields,
+                        connection.collection(COLLECTION_NAME_COURSE).find(fields,
                             function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    resolve(isBoolenRes ? userList?.length > 0 : userList.map(user => new UserModel(user)));
+                                users.toArray().then(courseList => {
+                                    resolve(isBoolenRes ? courseList?.length > 0 : courseList.map(course => new CourseModel(course)));
                                 });
                             });
                     } catch (error) {
@@ -75,17 +74,12 @@ export default class UserTask {
     }
 
     public getAll(fields?: any) {
-        /**
-         * { isActive : boolean }
-         */
-        let field = fields?.isActive
-            ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-            : {}
+
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).find(field,
+                        connection.collection(COLLECTION_NAME_COURSE).find({},
                             function (err: any, users: Cursor) {
                                 users.toArray().then((userList: any) => {
                                     userList.forEach((x: any) => {
@@ -103,41 +97,13 @@ export default class UserTask {
 
     }
 
-    public getById(userId: any) {
-        return new Promise((resolve, reject) => {
-            if (!userId) {
-                reject('User Id is required');
-            }
-            this.mongoConnection.connect()
-                .then((connection: any) => {
-                    try {
-                        connection.collection(COLLECTION_NAME_USER).find({ _id: new ObjectID(userId) },
-                            function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    if (userList[0]) {
-                                        resolve(userList[0]);
-                                    } else {
-                                        reject(`No user found`);
-                                    }
-                                });
-                            });
-                    } catch (error) {
-                        reject(JSON.stringify(error));
-                        logging.error(NAMESPACE, 'UserTask.getById', JSON.stringify(error));
-                    }
-                })
-                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
-        });
-
-    }
-
     public delete(clientId?: any) {
 
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).deleteOne(
+                        connection.collection(COLLECTION_NAME_COURSE).deleteOne(
                             { _id: new ObjectId(clientId) }, function (err: any, users: any) {
                                 console.log(users);
                                 if (users.deletedCount) {
@@ -158,21 +124,17 @@ export default class UserTask {
 
     public update(data: any) {
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
                 reject('Body is required');
             }
 
-            let payLoad: UserModel = new UserModel(data);
-            if (payLoad.password) {
-                const bcryptjsHasedPassword = await bcryptjs.hash(payLoad.password, 1)
-                payLoad = { ...payLoad, password: bcryptjsHasedPassword }
-            }
+            let payLoad: CourseModel = new CourseModel(data);
 
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_USER).updateOne(
+                        connection.collection(COLLECTION_NAME_COURSE).updateOne(
                             { _id: new ObjectID(payLoad._id) },
                             { $set: removeId(JSON.parse(JSON.stringify(payLoad))) },
                             { upsert: false },
@@ -193,5 +155,4 @@ export default class UserTask {
         });
 
     }
-
 }

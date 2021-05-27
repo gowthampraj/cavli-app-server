@@ -1,7 +1,7 @@
 import DbClient = require('../mongoclient');
-import { removePassword } from '../utils/utils';
+import { removeId, removePassword } from '../utils/utils';
 import bcryptjs from 'bcryptjs';
-import { Cursor, ObjectId } from 'mongodb';
+import { Cursor, ObjectID, ObjectId } from 'mongodb';
 import logging from '../config/logging';
 // import { UserModel } from '../models/user.model';
 import { CountryModel } from '../models/country.model';
@@ -126,4 +126,39 @@ export default class CountryTask {
         });
 
     }
+
+    public update(data: any) {
+
+        return new Promise((resolve, reject) => {
+            if (!data || Object.keys(data).length === 0) {
+                reject('Body is required');
+            }
+
+            let payLoad: CountryModel = new CountryModel(data);
+
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_COUNTRY).updateOne(
+                            { _id: new ObjectID(payLoad._id) },
+                            { $set: removeId(JSON.parse(JSON.stringify(payLoad))) },
+                            { upsert: false },
+                            function (err: any, res: any) {
+                                if (res.matchedCount) {
+                                    if (res.matchedCount === res.modifiedCount) {
+                                        resolve({ status: 200, msg: "Updated" });
+                                    } else resolve({ status: 400, msg: "Nothing to update" });
+                                } else {
+                                    resolve({ status: 404, msg: 'No match found' });
+                                }
+                            });
+                    } catch (error) {
+                        logging.info(NAMESPACE, `Unable to connect to db :`, JSON.stringify(error));
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
+
+    }
+
 }

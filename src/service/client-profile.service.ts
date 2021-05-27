@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
-import ClientTask from "../task/client.task";
 import { ResponseModel } from "../models/response.model";
 import logging from "../config/logging";
+import ClientProfileTask from "../task/client-profile.task";
 
-const NAMESPACE = 'CLIENT'
-export default class ClientService {
-    private clientTask: ClientTask;
+const NAMESPACE = 'CLIENT PROFILE SERVICE INFO'
+export default class ClientProfileService {
+    private clientProfileTask: ClientProfileTask;
     constructor() {
-        this.clientTask = new ClientTask();
+        this.clientProfileTask = new ClientProfileTask();
     }
 
     public create(req: Request, res: Response) {
         const payLoad = req.body;
-        this.clientTask.create(payLoad)
+        this.clientProfileTask.create(payLoad)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -20,7 +20,7 @@ export default class ClientService {
                     message: "Created",
                     data: response.insertedId ?? ''
                 }
-                logging.info(NAMESPACE, `ClientService.create ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `ClientProfileService.create ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -29,13 +29,13 @@ export default class ClientService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.warn(NAMESPACE, `ClientService.create ${JSON.stringify(err)}`);
+                logging.warn(NAMESPACE, `ClientProfileService.create ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }
 
     public getAll(req: Request, res: Response) {
-        this.clientTask.getAll(req.query)
+        this.clientProfileTask.getAll(req.query)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -43,7 +43,7 @@ export default class ClientService {
                     data: response ?? [],
                     length: response?.length ?? 0
                 }
-                logging.info(NAMESPACE, `ClientService.getAll ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `ClientProfileService.getAll ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -52,13 +52,13 @@ export default class ClientService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.warn(NAMESPACE, `ClientService.getAll ${JSON.stringify(err)}`);
+                logging.warn(NAMESPACE, `ClientProfileService.getAll ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }
 
     public getById(req: Request, res: Response) {
-        this.clientTask.getById(req.params.clientId)
+        this.clientProfileTask.getById(req.params.clientId)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -66,23 +66,23 @@ export default class ClientService {
                     data: response ?? [],
                     length: response?.length ?? 0
                 }
-                logging.info(NAMESPACE, `ClientService.getById ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `ClientProfileService.getById ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
                 const errorData: ResponseModel = {
                     status: 'Fail',
-                    code: 500,
-                    data: err ?? 'Internal Server error',
+                    code: err?.code ?? 500,
+                    data: err.msg ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE, `ClientService.getById ${JSON.stringify(err)}`);
-                return res.status(500).json(errorData)
+                logging.error(NAMESPACE, `ClientProfileService.getById ${JSON.stringify(err)}`);
+                return res.status(err?.code ?? 500).json(errorData)
             });
     }
 
     public update(req: Request, res: Response) {
         const payLoad = req.body;
-        this.clientTask.update(payLoad)
+        this.clientProfileTask.update(payLoad)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -90,7 +90,7 @@ export default class ClientService {
                     message: response?.msg,
                     data: response?.id
                 }
-                logging.info(NAMESPACE, `ClientService.update ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `ClientProfileService.update ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -99,20 +99,20 @@ export default class ClientService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.warn(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
+                logging.warn(NAMESPACE, `ClientProfileService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }
 
     public delete(req: Request, res: Response) {
-        this.clientTask.delete(req.params.clientId)
+        this.clientProfileTask.delete(req.params.clientId)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
                     code: response?.status ?? 200,
                     message: response?.msg
                 }
-                logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `ClientProfileService.delete ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -121,7 +121,7 @@ export default class ClientService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
+                logging.error(NAMESPACE, `ClientProfileService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }

@@ -65,7 +65,7 @@ export default class UserService {
                     code: response?.status ?? 500,
                     message: response?.msg
                 }
-                logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
+                logging.info(NAMESPACE, `userService.delete ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -74,8 +74,34 @@ export default class UserService {
                     code: err.status ?? 500,
                     data: err.msg ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
+                logging.error(NAMESPACE, `userService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }
+
+
+
+    public update(req: Request, res: Response) {
+        const payLoad = req.body;
+        this.userTask.update(payLoad)
+            .then((response: any) => {
+                const responseData: ResponseModel = {
+                    status: 'Success',
+                    code: response?.status ?? 500,
+                    message: response?.msg
+                }
+                logging.info(NAMESPACE, `userService.update ${JSON.stringify(responseData)}`);
+                return res.status(200).json(responseData)
+            })
+            .catch((err: any) => {
+                const errorData: ResponseModel = {
+                    status: 'Fail',
+                    code: 500,
+                    data: err ?? 'Internal Server error',
+                }
+                logging.warn(NAMESPACE, `userService.update ${JSON.stringify(err)}`);
+                return res.status(500).json(errorData)
+            });
+    }
+
 }

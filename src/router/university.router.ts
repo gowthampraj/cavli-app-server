@@ -1,7 +1,7 @@
 import { Request, Router, Response } from "express";
-import CountryService from "../service/country.service";
+import UniversityService from "../service/university.service";
 
-export default class CountryRouter {
+export default class UniversityRouter {
 
     public router: Router;
 
@@ -13,34 +13,34 @@ export default class CountryRouter {
      * name
      */
     private routes() {
-        const countryService = new CountryService();
+        const universityService = new UniversityService();
 
         /**
          * create
          */
         this.router.post('/', (req: Request, res: Response) => {
-            countryService.create(req, res);
+            universityService.create(req, res);
         });
 
         /**
          * get all countries list
          */
         this.router.get('/', (req: Request, res: Response) => {
-            countryService.getAll(req, res);
+            universityService.getAll(req, res);
         });
 
         /**
         * delete
         */
-        this.router.delete('/:countryId', (req: Request, res: Response) => {
-            countryService.delete(req, res);
+        this.router.delete('/:universityId', (req: Request, res: Response) => {
+            universityService.delete(req, res);
         });
 
         /**
-        * update
-        */
-         this.router.put('/', (req: Request, res: Response) => {
-            countryService.update(req, res);
+         * delete
+         */
+        this.router.put('/', (req: Request, res: Response) => {
+            universityService.update(req, res);
         });
 
     }
