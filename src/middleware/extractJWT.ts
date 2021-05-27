@@ -32,6 +32,11 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
             message: 'User is not active please contact admin'
         });
     }
+    if (!user?.permission?.login) {
+        return res.status(401).json({
+            message: 'User is invalid'
+        });
+    }
     if (token) {
         jwt.verify(token, config.server.token.secret, (error, decoded) => {
             if (error) {

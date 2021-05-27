@@ -26,7 +26,10 @@ export default class AuthTask {
                 reject({ code: 400, msg: "User is not active" });
                 return
             };
-
+            if (!userList[0].permission?.login) {
+                reject({ code: 400, msg: "Login is not vaild" });
+                return
+            };
             bcryptjs.compare(data.password, userList[0].password)
                 .then((isPasswordMatch: boolean) => {
                     if (!isPasswordMatch) {
