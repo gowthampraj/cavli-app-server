@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from '../config/config';
 import logging from '../config/logging';
 
-const NAMESPACE = ' Auth ';
+const NAMESPACE = 'AUTH SIGN JWT';
 
 const signJWT = (user: any, callback: (error: Error | null, token: string | null) => void): void => {
     var timeSinceEpoch = new Date().getTime();
