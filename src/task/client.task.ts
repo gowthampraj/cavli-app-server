@@ -3,18 +3,22 @@ import DbClient = require('../mongoclient');
 import { removeId } from '../utils/utils';
 import { ClientModel } from '../models/client.model';
 import logging from '../config/logging';
+import { CommentModel, CommentType } from '../models/comment.model';
+import CommentTask from './comment.task';
 const NAMESPACE = 'CLIENT';
 const COLLECTION_NAME_CLIENT = 'client';
 
 export default class ClientTask {
 
     private mongoConnection: any;
+    private commentTask: CommentTask;
 
     constructor() {
         this.mongoConnection = DbClient.getInstance();
-
+        this.commentTask = new CommentTask();
     }
     create(data: any) {
+        const self = this;
         return new Promise((resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
                 reject('Body is required')
@@ -27,7 +31,21 @@ export default class ClientTask {
                     try {
                         connection.collection(COLLECTION_NAME_CLIENT).insertOne(payLoad, function (err: any, res: any) {
                             if (res.insertedCount) {
-                                resolve({ insertedId: res.insertedId })
+                                resolve({ insertedId: res.insertedId });
+                                /**
+                                * Create Comment
+                                */
+                                if (new ObjectID(res.insertedId).toString()) {
+                                    const commentPayload = new CommentModel(
+                                        {
+                                            clientId: new ObjectID(res.insertedId).toString(),
+                                            createdAt: payLoad.createdAt ?? new Date(),
+                                            createdBy: payLoad.createdBy ?? 'UNKOWN',
+                                            type: CommentType.CREATE_NEW_CLIENT,
+                                        }
+                                    )
+                                    self.createComment(commentPayload);
+                                }
                             }
                         });
                     } catch (error) {
@@ -98,6 +116,7 @@ export default class ClientTask {
     update(data: any) {
 
         return new Promise((resolve, reject) => {
+            const self = this;
             if (!data || Object.keys(data).length === 0) {
                 reject('Body is required');
             }
@@ -117,6 +136,21 @@ export default class ClientTask {
                                 if (res.matchedCount) {
                                     if (res.matchedCount === res.modifiedCount) {
                                         resolve({ status: 200, msg: "Updated", id: payLoad._id });
+                                        /**
+                                         * edit Comment
+                                         */
+                                        if (payLoad._id) {
+                                            const commentPayload = new CommentModel(
+                                                {
+                                                    clientId: payLoad._id,
+                                                    createdAt: payLoad.createdAt ?? new Date(),
+                                                    createdBy: payLoad.createdBy ?? 'UNKNOWN',
+                                                    type: CommentType.EDIT_CLIENT,
+                                                }
+                                            )
+                                            self.createComment(commentPayload);
+                                        }
+
                                     } else resolve({ status: 400, msg: "Nothing to update" });
                                 } else {
                                     resolve({ status: 404, msg: 'No match found' });
@@ -162,6 +196,10 @@ export default class ClientTask {
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
 
+    }
+
+    createComment(comment: CommentModel) {
+        this.commentTask.create(comment)
     }
 
 }

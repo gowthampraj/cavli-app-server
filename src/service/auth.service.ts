@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import AuthTask from "../task/auth.task";
 import { ResponseModel } from "../models/response.model";
 import logging from "../config/logging";
+import { removePassword } from "../utils/utils";
 const NAMESPACE = 'Auth'
 export default class AuthService {
     private authTask: AuthTask;
@@ -19,7 +20,7 @@ export default class AuthService {
                     status: 'Success',
                     code: response.code ?? 200,
                     token: response.token,
-                    data: { username: response.data.username, userRole: response.data.userRole, _id: response.data._id }
+                    data: {...removePassword(response.data)}
                 }
                 logging.info(NAMESPACE, 'UserService.login', responseData);
                 return res.status(response.code ?? 200).json(responseData)

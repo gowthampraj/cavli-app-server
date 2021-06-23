@@ -1,7 +1,7 @@
 
 import { Cursor } from 'mongodb';
 import DbClient = require('../mongoclient');
-import { Comment } from '../models/comment.model';
+import { CommentModel } from '../models/comment.model';
 import logging from '../config/logging';
 
 const NAMESPACE = 'COMMENTS';
@@ -20,7 +20,7 @@ export default class CommentTask {
                 reject('Body is required')
             }
 
-            let payLoad: Comment = new Comment(data);
+            let payLoad: CommentModel = new CommentModel(data);
             logging.info(NAMESPACE, `CommentTask.create`, payLoad);
 
             this.mongoConnection.connect()
