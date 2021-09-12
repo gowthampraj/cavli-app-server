@@ -14,6 +14,8 @@ import ClientProfileRouter from './router/client-profile.router';
 export default class ServerRoute {
     private static instance: ServerRoute
 
+    private static BASE = '/api/'
+
     private clientRouter: ClientRouter;
     private clientServiceInfoRouter: ClientServiceInfoRouter;
     private clientProfileRouter: ClientProfileRouter;
@@ -53,23 +55,23 @@ export default class ServerRoute {
         /**
          * Login
          */
-        expressApp.use('/auth', this.authRouter.router);
-        expressApp.use('/user', extractJWT, this.userRouter.router);
+        expressApp.use(ServerRoute.BASE + '/auth', this.authRouter.router);
+        expressApp.use(ServerRoute.BASE + '/user', extractJWT, this.userRouter.router);
 
         /**
          * Manage data
          */
-        expressApp.use('/client', extractJWT, this.clientRouter.router);
-        expressApp.use('/client-service-info', extractJWT, this.clientServiceInfoRouter.router);
-        expressApp.use('/client-profile', extractJWT, this.clientProfileRouter.router);
-        expressApp.use('/comment', extractJWT, this.commentRouter.router);
+        expressApp.use(ServerRoute.BASE + '/client', extractJWT, this.clientRouter.router);
+        expressApp.use(ServerRoute.BASE + '/client-service-info', extractJWT, this.clientServiceInfoRouter.router);
+        expressApp.use(ServerRoute.BASE + '/client-profile', extractJWT, this.clientProfileRouter.router);
+        expressApp.use(ServerRoute.BASE + '/comment', extractJWT, this.commentRouter.router);
 
         /**
          * Config / Helper 
          */
-        expressApp.use('/country', extractJWT, this.countryRouter.router);
-        expressApp.use('/university', extractJWT, this.universityRouter.router);
-        expressApp.use('/course', extractJWT, this.courseRouter.router);
-        expressApp.use('/service-provided', extractJWT, this.serviceRouter.router);
+        expressApp.use(ServerRoute.BASE + '/country', extractJWT, this.countryRouter.router);
+        expressApp.use(ServerRoute.BASE + '/university', extractJWT, this.universityRouter.router);
+        expressApp.use(ServerRoute.BASE + '/course', extractJWT, this.courseRouter.router);
+        expressApp.use(ServerRoute.BASE + '/service-provided', extractJWT, this.serviceRouter.router);
     }
 }
