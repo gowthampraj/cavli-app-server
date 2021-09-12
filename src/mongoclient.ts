@@ -6,9 +6,13 @@ class DbClient {
     private mongooseConnection: any;
     
     constructor() {
-        this.mongooseConnection = mongoose.connect(
-            `${AppConstant.MONGO_URL}/${AppConstant.DB_NAME}`, { useNewUrlParser: true, useUnifiedTopology: true }
-        );
+        try {
+            this.mongooseConnection = mongoose.connect(
+                `${AppConstant.MONGO_URL}/${AppConstant.DB_NAME}`, { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+        } catch(e) {
+            console.log(`DB connection error ${e}`);
+        }
     }
     public connect() {
         return new Promise((resolve, reject) => {
