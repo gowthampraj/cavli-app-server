@@ -40,8 +40,8 @@ export default class ClientService {
                 const responseData: ResponseModel = {
                     status: 'Success',
                     code: 200,
-                    data: response ?? [],
-                    length: response?.length ?? 0
+                    data: response?.data ?? [],
+                    page: response.page
                 }
                 logging.info(NAMESPACE, `ClientService.getAll ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)

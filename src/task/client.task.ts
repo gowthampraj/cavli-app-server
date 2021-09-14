@@ -5,6 +5,7 @@ import { ClientModel } from '../models/client.model';
 import logging from '../config/logging';
 import { CommentModel, CommentType } from '../models/comment.model';
 import CommentTask from './comment.task';
+import { AggregationCursor } from 'mongoose';
 const NAMESPACE = 'CLIENT';
 const COLLECTION_NAME_CLIENT = 'client';
 
@@ -62,19 +63,40 @@ export default class ClientTask {
         /**
          * { isActive : boolean }
          */
-        let field = fields?.isActive
+        const field = fields?.isActive
             ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-            : {}
+            : {};
+        const { size = 10, page = 1 } = fields;
+        const skip = (page - 1) * size;
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).find(field,
-                            function (err: any, users: Cursor) {
-                                users.toArray().then(userList => {
-                                    resolve(userList);
-                                });
-                            });
+                        connection.collection(COLLECTION_NAME_CLIENT).aggregate(
+                            [
+                                { $match: field },
+                                {
+                                    $facet: {
+                                        data: [{ $skip: skip }, { $limit: parseInt(size) }],
+                                        total: [
+                                            {
+                                                $count: 'total'
+                                            }
+                                        ]
+                                    }
+                                }
+                            ], async (err: any, data: AggregationCursor) => {
+                                if (err) {
+                                    reject(JSON.stringify(err));
+                                } else {
+                                    const result = await data.next();
+                                    result.page = result?.total[0] || { total: 0 };
+                                    result.page.size = parseInt(size);
+                                    result.page.page = parseInt(page);
+                                    resolve(result);
+                                }
+                            }
+                        )
                     } catch (error) {
                         reject(JSON.stringify(error));
                         logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
