@@ -4,13 +4,13 @@ class DbClient {
     private static instance: DbClient;
 
     private mongooseConnection: any;
-    
+
     constructor() {
         try {
             this.mongooseConnection = mongoose.connect(
                 `${AppConstant.MONGO_URL}/${AppConstant.DB_NAME}`, { useNewUrlParser: true, useUnifiedTopology: true }
             );
-        } catch(e) {
+        } catch (e) {
             console.log(`DB connection error ${e}`);
         }
     }
