@@ -110,7 +110,6 @@ export default class CountryTask {
                     try {
                         connection.collection(COLLECTION_NAME_COUNTRY).deleteOne(
                             { _id: new ObjectId(countryId) }, function (err: any, country: any) {
-                                console.log(country);
                                 if (country.deletedCount) {
                                     resolve({ status: 200, msg: "Deleted" });
                                 } else {

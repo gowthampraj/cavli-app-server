@@ -196,21 +196,32 @@ export default class ClientTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT).updateOne(
-                            { _id: new ObjectID(clientId) },
-                            { $set: { isActive: false } },
-                            { upsert: false },
-                            function (err: any, res: any) {
-                                if (res.matchedCount) {
-                                    if (res.matchedCount === res.modifiedCount) {
-                                        logging.info(NAMESPACE, `ClientTask.delete`, `Change status to Client Id : ${clientId}`);
 
-                                        resolve({ status: 200, msg: "Deleted" });
-                                    } else resolve({ status: 400, msg: "Nothing to update" });
+                        connection.collection(COLLECTION_NAME_CLIENT).deleteOne(
+                            { _id: new ObjectID(clientId) }, function (err: any, client: any) {
+                                if (client.deletedCount) {
+                                    resolve({ status: 200, msg: "Deleted" });
                                 } else {
-                                    resolve({ status: 404, msg: 'No match found' });
+                                    reject({ status: 400, msg: "Something went wrong" })
                                 }
-                            });
+                            }
+                        )
+
+                        // connection.collection(COLLECTION_NAME_CLIENT).updateOne(
+                        //     { _id: new ObjectID(clientId) },
+                        //     { $set: { isActive: false } },
+                        //     { upsert: false },
+                        //     function (err: any, res: any) {
+                        //         if (res.matchedCount) {
+                        //             if (res.matchedCount === res.modifiedCount) {
+                        //                 logging.info(NAMESPACE, `ClientTask.delete`, `Change status to Client Id : ${clientId}`);
+
+                        //                 resolve({ status: 200, msg: "Deleted" });
+                        //             } else resolve({ status: 400, msg: "Nothing to update" });
+                        //         } else {
+                        //             resolve({ status: 404, msg: 'No match found' });
+                        //         }
+                        //     });
                     } catch (error) {
                         logging.info(NAMESPACE, `ClientTask.delete`, error);
                     }
