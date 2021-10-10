@@ -162,4 +162,40 @@ export default class ClientServiceInfoTask {
 
     }
 
+    /**
+     * Dash board
+     */
+
+    async clientByPayment() {
+        try {
+
+            const filter = [
+                {
+                    '$match': {
+                        'payment.isPaid': false
+                    }
+                },
+                {
+                    '$sort': {
+                        'doj': -1
+                    }
+                },
+                {
+                    '$project': {
+                        clientId: 1,
+                        _id: -1,
+                        payment: 1,
+                        doj: 1
+                    }
+                }
+            ];
+            const conn = await this.mongoConnection.connect();
+            const result = conn.collection(COLLECTION_NAME_CLIENT_SERVICE_INFO).aggregate(filter);
+            return await result.toArray();
+        } catch (error) {
+            logging.error(NAMESPACE, 'UserService.clientByPayment', JSON.stringify(error));
+            throw error;
+        }
+    }
+
 }

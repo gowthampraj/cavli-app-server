@@ -6,6 +6,7 @@ import logging from '../config/logging';
 import { CommentModel, CommentType } from '../models/comment.model';
 import CommentTask from './comment.task';
 import { AggregationCursor } from 'mongoose';
+import { URLSearchParams } from 'url';
 const NAMESPACE = 'CLIENT';
 const COLLECTION_NAME_CLIENT = 'client';
 
@@ -66,26 +67,111 @@ export default class ClientTask {
         const field = fields?.isActive
             ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
             : {};
+
         const { size = 10, page = 1 } = fields;
         const skip = (page - 1) * size;
+        const createdAt = JSON.parse(fields.createdAt);
+        const query = [
+            // { $match: field },
+            { $match: { "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate } , ...field } },
+            { $sort: { createdAt: -1 } },
+            // { $match: { "firstName": { $regex: "Arun" } } },
+            // { $match: { "createdAt": { $gte: "2021-10-10T06:00:23.305Z" } } },
+            // { $match: { "createdAt": { $gte: "2021-10-03T18:30:00.000Z" } } },
+            {
+                $project: {
+                    "_id": {
+                        "$toString": "$_id"
+                    },
+                    firstName: 1,
+                    middleName: 1,
+                    lastName: 1,
+                    emailIds: 1,
+                    contactNumber: 1,
+                    isActive: 1,
+                    createdAt: 1,
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client-service-info',
+                    localField: '_id',
+                    foreignField: 'clientId',
+                    as: 'serviceInfo'
+                }
+            },
+            {
+                $project: {
+                    firstName: 1,
+                    middleName: 1,
+                    lastName: 1,
+                    emailIds: 1,
+                    contactNumber: 1,
+                    isActive: 1,
+                    createdAt: 1,
+                    serviceInfo: { $first: "$serviceInfo" }
+                }
+            },
+            {
+                $project: {
+                    firstName: 1,
+                    middleName: 1,
+                    lastName: 1,
+                    emailIds: 1,
+                    contactNumber: 1,
+                    isActive: 1,
+                    createdAt: 1,
+                    "serviceInfo.interestedCourse": 1
+                }
+            },
+            {
+                $facet: {
+                    data: [{ $skip: skip }, { $limit: parseInt(size) }],
+                    total: [
+                        {
+                            $count: 'total'
+                        }
+                    ]
+                }
+            }
+        ];
+
+        /** Find search keys and push into the query */
+        const searchParams = new URLSearchParams(fields);
+        const searchKeys = ['firstName', 'middleName', 'lastName', 'emailIds', 'contactNumber'];
+        const filter: any = {};
+        searchKeys.forEach(key => {
+            const hasValue = searchParams.has(key);
+            if (hasValue) {
+                const value = searchParams.get(key);
+                filter[key] = { $regex: value, $options: 'i' }
+            }
+        });
+        if (Object.keys(filter).length) {
+            query.splice(3, 0, { $match: filter })
+        }
+
+        /** Course status */
+        const courseStatus = fields.courseStatus.split(",");
+
+        if (courseStatus?.length && fields.courseStatus) {
+            const courseStatusQuery: any = {
+                '$match': {
+                    'serviceInfo.interestedCourse.status': {
+                        '$in': courseStatus
+                    }
+                }
+            }
+            query.splice(query.length - 1, 0, courseStatusQuery)
+        }
+
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection(COLLECTION_NAME_CLIENT).aggregate(
-                            [
-                                { $match: field },
-                                {
-                                    $facet: {
-                                        data: [{ $skip: skip }, { $limit: parseInt(size) }],
-                                        total: [
-                                            {
-                                                $count: 'total'
-                                            }
-                                        ]
-                                    }
-                                }
-                            ], async (err: any, data: AggregationCursor) => {
+                            query
+                            , async (err: any, data: AggregationCursor) => {
                                 if (err) {
                                     reject(JSON.stringify(err));
                                 } else {
@@ -144,7 +230,7 @@ export default class ClientTask {
             }
 
             let payLoad: ClientModel = new ClientModel(data);
-            logging.info(NAMESPACE, `ClientTask.delete`, JSON.stringify(payLoad));
+            logging.info(NAMESPACE, `ClientTask.update`, JSON.stringify(payLoad));
 
             this.mongoConnection.connect()
                 .then((connection: any) => {
@@ -165,8 +251,8 @@ export default class ClientTask {
                                             const commentPayload = new CommentModel(
                                                 {
                                                     clientId: payLoad._id,
-                                                    createdAt: payLoad.createdAt ?? new Date(),
-                                                    createdBy: payLoad.createdBy ?? 'UNKNOWN',
+                                                    createdAt: payLoad?.modifiedAt ?? new Date(),
+                                                    createdBy: payLoad.modifiedBy ?? 'UNKNOWN',
                                                     type: CommentType.EDIT_CLIENT,
                                                 }
                                             )
@@ -230,6 +316,7 @@ export default class ClientTask {
         });
 
     }
+
 
     createComment(comment: CommentModel) {
         this.commentTask.create(comment)

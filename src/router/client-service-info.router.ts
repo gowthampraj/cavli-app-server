@@ -50,5 +50,13 @@ export default class ClientServiceInfoRouter {
             clientServiceInfoService.delete(req, res);
         });
 
+         /**
+         * Dash
+         */
+        
+          this.router.get('/dashboard/payment', (req: Request, res: Response) => {
+            clientServiceInfoService.clientByPayment(req, res);
+        });
+
     }
 }

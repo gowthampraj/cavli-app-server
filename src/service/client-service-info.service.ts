@@ -126,4 +126,23 @@ export default class ClientServiceInfoService {
             });
     }
 
+    public async clientByPayment(req: Request, res: Response) {
+        try {
+            const response = await this.clientServiceInfoTask.clientByPayment();
+            const responseData: ResponseModel = {
+                status: 'Success',
+                code: 200,
+                data: response
+            }
+            return res.status(200).json(responseData)
+        } catch (error) {
+            const errorData: ResponseModel = {
+                status: 'Fail',
+                code: 500,
+                message: 'Internal Server error',
+            }
+            logging.error(NAMESPACE, `ClientService.clientByPayment ${JSON.stringify(error)}`);
+            return res.status(500).json(errorData)
+        }
+    }
 }

@@ -30,7 +30,7 @@ export default class ClientRouter {
         });
 
         /**
-        * get all client list ?isActive=true/false
+        * get client by ID
         */
         this.router.get('/:clientId', (req: Request, res: Response) => {
             clientService.getById(req, res);

@@ -20,7 +20,7 @@ export default class ClientService {
                     message: "Created",
                     data: response.insertedId ?? ''
                 }
-                logging.info(NAMESPACE, `ClientService.create ${JSON.stringify(responseData)}`);
+                // logging.info(NAMESPACE, `ClientService.create ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -43,7 +43,7 @@ export default class ClientService {
                     data: response?.data ?? [],
                     page: response.page
                 }
-                logging.info(NAMESPACE, `ClientService.getAll ${JSON.stringify(responseData)}`);
+                // logging.info(NAMESPACE, `ClientService.getAll ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -66,7 +66,7 @@ export default class ClientService {
                     data: response ?? [],
                     length: response?.length ?? 0
                 }
-                logging.info(NAMESPACE, `ClientService.getById ${JSON.stringify(responseData)}`);
+                // logging.info(NAMESPACE, `ClientService.getById ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -90,7 +90,7 @@ export default class ClientService {
                     message: response?.msg,
                     data: response?.id
                 }
-                logging.info(NAMESPACE, `ClientService.update ${JSON.stringify(responseData)}`);
+                // logging.info(NAMESPACE, `ClientService.update ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -112,7 +112,7 @@ export default class ClientService {
                     code: response?.status ?? 200,
                     message: response?.msg
                 }
-                logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
+                // logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
                 return res.status(200).json(responseData)
             })
             .catch((err: any) => {
@@ -121,7 +121,7 @@ export default class ClientService {
                     code: 500,
                     data: err ?? 'Internal Server error',
                 }
-                logging.error(NAMESPACE, `ClientService.update ${JSON.stringify(err)}`);
+                logging.error(NAMESPACE, `ClientService.delete ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
     }

@@ -47,12 +47,14 @@ export default class CommentTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_COMMENT).find(payload,
-                            function (err: any, comments: Cursor) {
-                                comments.toArray().then(commentList => {
-                                    resolve(commentList);
+                        connection.collection(COLLECTION_NAME_COMMENT)
+                            .find(payload,
+                                { sort: { createdAt: -1 } },
+                                function (err: any, comments: Cursor) {
+                                    comments.toArray().then(commentList => {
+                                        resolve(commentList);
+                                    });
                                 });
-                            });
                     } catch (error) {
                         logging.info(NAMESPACE, `CommentTask.create`, error);
                     }
