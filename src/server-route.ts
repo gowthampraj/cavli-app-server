@@ -10,6 +10,7 @@ import CourseRouter from './router/course.router';
 import ServiceProvidedRouter from './router/service-provided.router';
 import ClientServiceInfoRouter from './router/client-service-info.router';
 import ClientProfileRouter from './router/client-profile.router';
+import CompanyRouter from './router/company.router';
 
 export default class ServerRoute {
     private static instance: ServerRoute
@@ -24,6 +25,7 @@ export default class ServerRoute {
     private universityRouter: UniversityRouter;
     private courseRouter: CourseRouter;
     private serviceRouter: ServiceProvidedRouter;
+    private companyRouter: CompanyRouter;
 
     private constructor() {
         this.clientRouter = new ClientRouter();
@@ -36,6 +38,7 @@ export default class ServerRoute {
         this.universityRouter = new UniversityRouter();
         this.courseRouter = new CourseRouter();
         this.serviceRouter = new ServiceProvidedRouter();
+        this.companyRouter = new CompanyRouter();
     }
 
     public static getInstance(): ServerRoute {
@@ -71,5 +74,6 @@ export default class ServerRoute {
         expressApp.use('/university', extractJWT, this.universityRouter.router);
         expressApp.use('/course', extractJWT, this.courseRouter.router);
         expressApp.use('/service-provided', extractJWT, this.serviceRouter.router);
+        expressApp.use('/company', extractJWT, this.companyRouter.router);
     }
 }
