@@ -64,9 +64,26 @@ export default class ClientTask {
         /**
          * { isActive : boolean }
          */
-        const field = fields?.isActive
-            ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-            : {};
+        // const field = fields?.isActive
+        //     ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
+        //     : {};
+
+        const field: { [key: string]: any } = {};
+
+        if (fields?.isActive) {
+            field.isActive = fields?.isActive == true || fields?.isActive == 'true'
+        }
+
+        /**
+         * give direct field only
+         */
+        const fieldArray = ['company', 'status'];
+
+        fieldArray.forEach(x=> {
+            if (fields[x]) {
+                field[x] = fields[x];
+            }
+        });
 
         const { size = 10, page = 1 } = fields;
         const skip = (page - 1) * size;
