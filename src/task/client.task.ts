@@ -71,9 +71,16 @@ export default class ClientTask {
         const { size = 10, page = 1 } = fields;
         const skip = (page - 1) * size;
         const createdAt = JSON.parse(fields.createdAt);
+
+        let createdAtQuery = {}
+        if (createdAt.startDate && createdAt.endDate) {
+            createdAtQuery = {
+                "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate }
+            }
+        }
         const query = [
             // { $match: field },
-            { $match: { "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate } , ...field } },
+            { $match: { ...createdAtQuery, ...field } },
             { $sort: { createdAt: -1 } },
             // { $match: { "firstName": { $regex: "Arun" } } },
             // { $match: { "createdAt": { $gte: "2021-10-10T06:00:23.305Z" } } },
