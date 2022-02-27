@@ -26,14 +26,18 @@ export class InterestedCourse {
     appliedCountry?: string;
     appliedUni?: string;
     intake?: string;
-    comment?: string
+    comment?: string;
+    dateApplied?: Date;
+    ackNo?: String;
     constructor(i: InterestedCourse) {
         this.courseName = i.courseName;
         this.status = i.status;
         this.appliedCountry = i?.appliedCountry;
         this.appliedUni = i.appliedUni;
         this.intake = i?.intake;
-        this.comment = i.comment
+        this.comment = i?.comment
+        this.dateApplied = i?.dateApplied;
+        this.ackNo = i?.ackNo;
     }
 }
 

@@ -6,6 +6,7 @@ export class ServiceProvided {
     masterAmount?: number;
     staffAllocated?: string[];
     timeSlot?: string[];
+    company?: string;
     constructor(i: ServiceProvided) {
         if (i._id) this._id = i._id;
         this.serviceName = i.serviceName;
@@ -14,5 +15,6 @@ export class ServiceProvided {
         this.masterAmount = i.masterAmount;
         this.staffAllocated = i.staffAllocated ?? [];
         this.timeSlot = i.timeSlot ?? [];
+        this.company = i.company;
     }
 }

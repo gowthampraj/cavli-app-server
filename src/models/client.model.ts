@@ -1,6 +1,7 @@
 export class ClientModel {
     _id?: string;
     ackNo?: string;
+    company?:string;
     firstName?: string;
     middleName?: string;
     lastName?: string;
@@ -26,6 +27,7 @@ export class ClientModel {
         if (input._id)
             this._id = input._id;
         this.ackNo = input.ackNo;
+        this.company = input.company;
         this.firstName = input.firstName;
         this.middleName = input.middleName;
         this.lastName = input.lastName;
