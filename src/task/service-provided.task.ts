@@ -85,10 +85,14 @@ export default class ServiceProvidedTask {
     public getAll(fields?: any) {
 
         return new Promise((resolve, reject) => {
+            let field: any = {};
+            if (fields?.company) {
+                field.company = fields?.company
+            }
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).find({},
+                        connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).find({ ...field },
                             function (err: any, country: Cursor) {
                                 country.toArray().then((universityList: any) => {
                                     resolve(universityList);
