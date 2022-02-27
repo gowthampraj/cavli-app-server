@@ -1,6 +1,7 @@
 export class UserModel {
     _id?: string
     username?: string;
+    company: string;
     password: string;
     name?: string;
     isActive?: boolean;
@@ -14,7 +15,8 @@ export class UserModel {
         this.name = i.name;
         this.isActive = i.isActive ?? true;
         this.userRole = i.userRole;
-        this.permission = new Permission(i?.permission)
+        this.permission = new Permission(i?.permission);
+        this.company = i.company;
     }
 }
 
