@@ -79,7 +79,7 @@ export default class ClientTask {
          */
         const fieldArray = ['company', 'status'];
 
-        fieldArray.forEach(x=> {
+        fieldArray.forEach(x => {
             if (fields[x]) {
                 field[x] = fields[x];
             }
@@ -177,6 +177,9 @@ export default class ClientTask {
 
         /** Course status */
         const courseStatus = fields.courseStatus.split(",");
+        const courseName = fields?.courseName?.split(",");
+        const appliedCountry = fields?.appliedCountry?.split(",");
+        const intake = fields?.intake?.split(",");
 
         if (courseStatus?.length && fields.courseStatus) {
             const courseStatusQuery: any = {
@@ -187,6 +190,39 @@ export default class ClientTask {
                 }
             }
             query.splice(query.length - 1, 0, courseStatusQuery)
+        }
+
+        if (courseName?.length && fields.courseName) {
+            const courseNameQuery: any = {
+                '$match': {
+                    'serviceInfo.interestedCourse.courseName': {
+                        '$in': courseName
+                    }
+                }
+            }
+            query.splice(query.length - 1, 0, courseNameQuery)
+        }
+
+        if (appliedCountry?.length && fields.appliedCountry) {
+            const countryQuery: any = {
+                '$match': {
+                    'serviceInfo.interestedCourse.appliedCountry': {
+                        '$in': appliedCountry
+                    }
+                }
+            }
+            query.splice(query.length - 1, 0, countryQuery)
+        }
+
+        if (intake?.length && fields.intake) {
+            const intakeQuery: any = {
+                '$match': {
+                    'serviceInfo.interestedCourse.intake': {
+                        '$in': intake
+                    }
+                }
+            }
+            query.splice(query.length - 1, 0, intakeQuery)
         }
 
         return new Promise((resolve, reject) => {

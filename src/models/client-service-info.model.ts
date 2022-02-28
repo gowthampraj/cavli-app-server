@@ -48,12 +48,14 @@ export class Payment {
         this.feeTotal = input?.feeTotal ?? 0;
         this.masterAmount = input.masterAmount ?? 0
         this.feePaid = input?.feePaid ? input?.feePaid.map((feePaid: FeePaid) => new FeePaid(feePaid)) : [];
+        this.nextDueDate = input?.nextDueDate;
     }
     masterAmount?: number;
     isPaid: boolean;
     discount?: number;
     feeTotal: number;
-    feePaid: FeePaid[]
+    feePaid: FeePaid[];
+    nextDueDate?: Date;
 }
 
 export class FeePaid {

@@ -81,7 +81,7 @@ export default class CourseTask {
                     try {
                         connection.collection(COLLECTION_NAME_COURSE).find({},
                             function (err: any, users: Cursor) {
-                                users.toArray().then((userList: any) => {
+                                users?.toArray().then((userList: any) => {
                                     userList.forEach((x: any) => {
                                         x = removePassword(x);
                                     })
