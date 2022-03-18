@@ -2,7 +2,7 @@
 import logging from './config/logging';
 import expressApp from './index'
 import http from 'http';
-const app_port = 4000;
+const app_port = 4001;
 let server: any = {}
 const NAMESPACE = 'SERVER'
 server = http.createServer(expressApp);

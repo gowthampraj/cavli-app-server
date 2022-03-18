@@ -68,6 +68,7 @@ export default class ClientTask {
         //     ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
         //     : {};
 
+        const extraProj = { permanentAddress: 1, mailingAddress: 1, ackNo: 1, gender: 1, status: 1, passport: 1, nationality: 1, emergencyContact: 1, lastContacted: 1 }
         const field: { [key: string]: any } = {};
 
         if (fields?.isActive) {
@@ -114,6 +115,7 @@ export default class ClientTask {
                     contactNumber: 1,
                     isActive: 1,
                     createdAt: 1,
+                    ...extraProj
                 }
             },
             {
@@ -133,6 +135,7 @@ export default class ClientTask {
                     contactNumber: 1,
                     isActive: 1,
                     createdAt: 1,
+                    ...extraProj,
                     serviceInfo: { $first: "$serviceInfo" }
                 }
             },
@@ -145,7 +148,13 @@ export default class ClientTask {
                     contactNumber: 1,
                     isActive: 1,
                     createdAt: 1,
-                    "serviceInfo.interestedCourse": 1
+                    ...extraProj,
+                    "serviceInfo.interestedCourse": 1,
+                    "serviceInfo.payment": 1,
+                    "serviceInfo.serviceProvided": 1,
+                    "serviceInfo.doj": 1,
+                    "serviceInfo.sourceOfFund": 1,
+                    "serviceInfo.documentCollected": 1,
                 }
             },
             {
