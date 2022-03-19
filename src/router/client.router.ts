@@ -30,6 +30,13 @@ export default class ClientRouter {
         });
 
         /**
+        * get all client list ?isActive=true/false
+        */
+        this.router.get('/dashboard', (req: Request, res: Response) => {
+            clientService.getDashboard(req, res);
+        });
+
+        /**
         * get client by ID
         */
         this.router.get('/:clientId', (req: Request, res: Response) => {
@@ -49,6 +56,7 @@ export default class ClientRouter {
         this.router.delete('/:clientId', (req: Request, res: Response) => {
             clientService.delete(req, res);
         });
+
 
     }
 }

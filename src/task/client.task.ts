@@ -386,6 +386,53 @@ export default class ClientTask {
 
     }
 
+    /**
+     * getDashboard
+     */
+    public getDashboard() {
+        return new Promise((resolve, reject) => {
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_CLIENT)
+                            .find(
+                                {
+                                    // "createdAt": { $gte: "2022-03-18T07:08:27.637Z", $lte: "2022-03-19T07:08:27.637Z" }
+                                },
+                                {
+                                    project: {
+                                        firstName: 1,
+                                        middleName: 1,
+                                        lastName: 1,
+                                        createdAt: 1
+                                    },
+                                    sort: { createdAt: -1 }
+                                },
+                                function (err: any, clients: Cursor) {
+                                    clients.toArray().then(clientsList => {
+                                        resolve(clientsList);
+                                    });
+                                });
+                        // connection.collection(COLLECTION_NAME_CLIENT).aggregate(
+                        //     query
+                        //     , async (err: any, data: AggregationCursor) => {
+                        //         if (err) {
+                        //             reject(JSON.stringify(err));
+                        //         } else {
+                        //             const result = await data.next();
+                        //             resolve(result);
+                        //         }
+                        //     }
+                        // )
+                    } catch (error) {
+                        reject(JSON.stringify(error));
+                        logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
+    }
+
 
     createComment(comment: CommentModel) {
         this.commentTask.create(comment)

@@ -126,4 +126,29 @@ export default class ClientService {
             });
     }
 
+    /**
+     * getDashboard
+     */
+    public getDashboard(req: Request, res: Response) {
+        this.clientTask.getDashboard()
+            .then((response: any) => {
+                const responseData: ResponseModel = {
+                    status: 'Success',
+                    code: response?.status ?? 200,
+                    data: response,
+                    message: response?.msg
+                }
+                return res.status(200).json(responseData)
+            })
+            .catch((err: any) => {
+                const errorData: ResponseModel = {
+                    status: 'Fail',
+                    code: 500,
+                    data: err ?? 'Internal Server error',
+                }
+                logging.error(NAMESPACE, `ClientService.getDashboard ${JSON.stringify(err)}`);
+                return res.status(500).json(errorData)
+            });
+    }
+
 }
