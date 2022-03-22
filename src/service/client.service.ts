@@ -130,7 +130,7 @@ export default class ClientService {
      * getDashboard
      */
     public getDashboard(req: Request, res: Response) {
-        this.clientTask.getDashboard()
+        this.clientTask.getDashboard(req.query)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',

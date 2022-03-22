@@ -389,7 +389,15 @@ export default class ClientTask {
     /**
      * getDashboard
      */
-    public getDashboard() {
+    public getDashboard(fields?: any) {
+        const createdAt = JSON.parse(fields?.createdAt || '{}');
+
+        let createdAtQuery = {}
+        if (createdAt.startDate && createdAt.endDate) {
+            createdAtQuery = {
+                "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate }
+            }
+        }
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
@@ -397,7 +405,7 @@ export default class ClientTask {
                         connection.collection(COLLECTION_NAME_CLIENT)
                             .find(
                                 {
-                                    // "createdAt": { $gte: "2022-03-18T07:08:27.637Z", $lte: "2022-03-19T07:08:27.637Z" }
+                                    ...createdAtQuery
                                 },
                                 {
                                     project: {

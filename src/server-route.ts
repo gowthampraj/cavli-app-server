@@ -80,7 +80,7 @@ export default class ServerRoute {
         expressApp.use('/course', extractJWT, this.courseRouter.router);
         expressApp.use('/service-provided', extractJWT, this.serviceRouter.router);
         expressApp.use('/company', extractJWT, this.companyRouter.router);
-        expressApp.use('/extra', this.extraRouter.router);
+        expressApp.use('/extra', extractJWT, this.extraRouter.router);
 
         /**
          * Import / Export
