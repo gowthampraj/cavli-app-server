@@ -298,7 +298,7 @@ export default class ClientTask {
                 reject('Body is required');
             }
 
-            let payLoad: ClientModel = new ClientModel(data);
+            let payLoad: ClientModel = new ClientModel(data?.data);
             logging.info(NAMESPACE, `ClientTask.update`, JSON.stringify(payLoad));
 
             this.mongoConnection.connect()

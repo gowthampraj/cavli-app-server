@@ -4,6 +4,7 @@ import logging from '../config/logging';
 import { Request, Response, NextFunction } from 'express';
 import UserTask from '../task/user.task';
 import { Cursor, ObjectID, ObjectId } from 'mongodb';
+import { UserModel, UserRoles } from '../models/user.model';
 
 
 const NAMESPACE = 'AUTH';
@@ -15,7 +16,7 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.headers.userid;
 
     logging.info(NAMESPACE, `Validating token of user [${userId}]`);
-    
+
     const isValid = userId ? ObjectID.isValid(userId.toString()) : false;
 
     if (!userId || !isValid) {
@@ -37,6 +38,13 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
             message: 'User is invalid'
         });
     }
+    const hasPermission = manageUserPermissions(user, req);
+    if (!hasPermission) {
+        return res.status(403).json({
+            message: 'User has no permission'
+        });
+    }
+
     if (token) {
         jwt.verify(token, config.server.token.secret, (error, decoded) => {
             if (error) {
@@ -55,5 +63,31 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
         });
     }
 };
+
+function manageUserPermissions(user: UserModel, req: Request): boolean {
+    const action: string = req.body?.action;
+    let hasPermission = false;
+    switch (action) {
+        case 'CLIENT_STATUS_CHANGE':
+            hasPermission = checkPermission(user, PermissionObj.CHANGE_CLIENT_STATUS)
+            break;
+
+        default:
+            hasPermission = true;
+            break;
+    }
+    return hasPermission;
+}
+
+function checkPermission(user: UserModel, type: PermissionObj): boolean {
+    /** If user is ADMIN or has permission */
+    return user.userRole === UserRoles.ADMIN || !!user.permission?.[type];
+}
+// export 
+
+export enum PermissionObj {
+    CHANGE_CLIENT_STATUS = 'changeStatus',
+    LOGIN = 'login',
+}
 
 export default extractJWT;
