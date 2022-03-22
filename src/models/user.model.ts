@@ -26,11 +26,13 @@ export enum UserRoles {
     STAFF = 'STAFF',
 }
 
-class Permission {
+export class Permission {
     login?: boolean;
     manage?: boolean;
+    changeStatus?: boolean;
     constructor(i: Permission) {
-        this.login = i?.login || false;
-        this.manage = i?.manage || false;
+        this.login = i?.login;
+        this.manage = i?.manage;
+        this.changeStatus = i?.changeStatus;
     }
 }
