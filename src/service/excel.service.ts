@@ -15,7 +15,7 @@ export default class ExcelService {
 
     public exportPDF(req: Request, res: Response) {
         try {
-            this.clientTask.getAll(req.query)
+            this.clientTask.getAll(req.query, true)
                 .then(async (response: any) => {
                     const excel = await this.generateExcel(response.data);
                     excel.write(`Client details ${new Date().toISOString()}.xlsx`, res)
@@ -48,8 +48,6 @@ export default class ExcelService {
 
     public async generateExcel(data: any[], SheetName?: string) {
         try {
-
-            console.log(data);
 
             const colWidth = 10;
             /**

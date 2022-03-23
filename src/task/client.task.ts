@@ -60,15 +60,17 @@ export default class ClientTask {
 
     }
 
-    getAll(fields?: any) {
-        /**
-         * { isActive : boolean }
-         */
-        // const field = fields?.isActive
-        //     ? { isActive: fields?.isActive == true || fields?.isActive == 'true' }
-        //     : {};
+    getAll(fields?: any, isExport?: boolean) {
 
-        const extraProj = { permanentAddress: 1, mailingAddress: 1, ackNo: 1, gender: 1, status: 1, passport: 1, nationality: 1, emergencyContact: 1, lastContacted: 1 }
+        const extraProj = isExport ? { permanentAddress: 1, mailingAddress: 1, ackNo: 1, gender: 1, status: 1, passport: 1, nationality: 1, emergencyContact: 1, lastContacted: 1 } : {}
+        const extraProj2 = isExport ? {
+            "serviceInfo.interestedCourse": 1,
+            "serviceInfo.payment": 1,
+            "serviceInfo.serviceProvided": 1,
+            "serviceInfo.doj": 1,
+            "serviceInfo.sourceOfFund": 1,
+            "serviceInfo.documentCollected": 1,
+        } : {}
         const field: { [key: string]: any } = {};
 
         if (fields?.isActive) {
@@ -149,12 +151,7 @@ export default class ClientTask {
                     isActive: 1,
                     createdAt: 1,
                     ...extraProj,
-                    "serviceInfo.interestedCourse": 1,
-                    "serviceInfo.payment": 1,
-                    "serviceInfo.serviceProvided": 1,
-                    "serviceInfo.doj": 1,
-                    "serviceInfo.sourceOfFund": 1,
-                    "serviceInfo.documentCollected": 1,
+                    ...extraProj2
                 }
             },
             {
