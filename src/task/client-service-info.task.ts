@@ -138,10 +138,8 @@ export default class ClientServiceInfoTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_CLIENT_SERVICE_INFO).updateOne(
-                            { _id: new ObjectID(clientId) },
-                            { $set: { isActive: false } },
-                            { upsert: false },
+                        connection.collection(COLLECTION_NAME_CLIENT_SERVICE_INFO).deleteOne(
+                            { clientId },
                             function (err: any, res: any) {
                                 if (res.matchedCount) {
                                     if (res.matchedCount === res.modifiedCount) {
@@ -187,7 +185,7 @@ export default class ClientServiceInfoTask {
                         pipeline: [
                             { "$addFields": { "articleId": { "$toString": "$_id" } } },
                             { "$match": { "$expr": { "$eq": ["$articleId", "$$clientId"] } } }
-                            , { "$project": { 'firstName': 1, 'lastName': 1, 'middleName': 1 } }
+                            , { "$project": { 'firstName': 1, 'lastName': 1, 'middleName': 1, 'isActive': 1 } }
                         ],
                         as: 'clientInfo'
                     }
@@ -199,6 +197,11 @@ export default class ClientServiceInfoTask {
                         payment: 1,
                         doj: 1,
                         clientInfo: { $first: "$clientInfo" }
+                    }
+                },
+                {
+                    '$match': {
+                        'clientInfo.isActive': true
                     }
                 }
             ];
