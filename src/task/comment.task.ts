@@ -61,6 +61,36 @@ export default class CommentTask {
                 })
                 .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
         });
+    }
+
+    delete(clientId: any) {
+
+        return new Promise((resolve, reject) => {
+            if (!clientId) reject('Client Id is required');
+            logging.info(NAMESPACE, `CommentTask.delete`, `Client Id : ${clientId}`);
+
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_COMMENT).deleteMany(
+                            { clientId },
+                            function (err: any, res: any) {
+                                if (res.matchedCount) {
+                                    if (res.matchedCount === res.modifiedCount) {
+                                        logging.info(NAMESPACE, `CommentTask.delete`, `Change status to Client Id : ${clientId}`);
+
+                                        resolve({ status: 200, msg: "Deleted" });
+                                    } else resolve({ status: 400, msg: "Nothing to update" });
+                                } else {
+                                    resolve({ status: 404, msg: 'No match found' });
+                                }
+                            });
+                    } catch (error) {
+                        logging.info(NAMESPACE, `CommentTask.delete`, error);
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
 
     }
 }

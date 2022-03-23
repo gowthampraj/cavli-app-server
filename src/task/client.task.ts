@@ -354,9 +354,14 @@ export default class ClientTask {
                         connection.collection(COLLECTION_NAME_CLIENT).deleteOne(
                             { _id: new ObjectID(clientId) }, function (err: any, client: any) {
                                 if (client.deletedCount) {
+                                    try {
+                                        const clientServiceInfoTask: ClientServiceInfoTask = new ClientServiceInfoTask();
+                                        const commentTask: CommentTask = new CommentTask();
+                                        commentTask.delete(clientId)
+                                        clientServiceInfoTask.delete(clientId);
+                                    } catch (error) {
 
-                                    const clientServiceInfoTask: ClientServiceInfoTask = new ClientServiceInfoTask();
-                                    clientServiceInfoTask.delete(clientId);
+                                    }
                                     resolve({ status: 200, msg: "Deleted" });
                                 } else {
                                     reject({ status: 400, msg: "Something went wrong" })
