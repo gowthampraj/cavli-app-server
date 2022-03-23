@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import AppConstant from "./constants";
 class DbClient {
+    /**
+     * https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#find
+     */
     private static instance: DbClient;
 
     private mongooseConnection: any;

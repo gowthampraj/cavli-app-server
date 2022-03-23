@@ -181,11 +181,24 @@ export default class ClientServiceInfoTask {
                     }
                 },
                 {
+                    '$lookup': {
+                        from: 'client',
+                        let: { 'clientId': '$clientId' },
+                        pipeline: [
+                            { "$addFields": { "articleId": { "$toString": "$_id" } } },
+                            { "$match": { "$expr": { "$eq": ["$articleId", "$$clientId"] } } }
+                            , { "$project": { 'firstName': 1, 'lastName': 1, 'middleName': 1 } }
+                        ],
+                        as: 'clientInfo'
+                    }
+                },
+                {
                     '$project': {
                         clientId: 1,
                         _id: -1,
                         payment: 1,
-                        doj: 1
+                        doj: 1,
+                        clientInfo: { $first: "$clientInfo" }
                     }
                 }
             ];

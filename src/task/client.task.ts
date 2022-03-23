@@ -405,7 +405,7 @@ export default class ClientTask {
                                     ...createdAtQuery
                                 },
                                 {
-                                    project: {
+                                    projection: {
                                         firstName: 1,
                                         middleName: 1,
                                         lastName: 1,
@@ -418,17 +418,6 @@ export default class ClientTask {
                                         resolve(clientsList);
                                     });
                                 });
-                        // connection.collection(COLLECTION_NAME_CLIENT).aggregate(
-                        //     query
-                        //     , async (err: any, data: AggregationCursor) => {
-                        //         if (err) {
-                        //             reject(JSON.stringify(err));
-                        //         } else {
-                        //             const result = await data.next();
-                        //             resolve(result);
-                        //         }
-                        //     }
-                        // )
                     } catch (error) {
                         reject(JSON.stringify(error));
                         logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
