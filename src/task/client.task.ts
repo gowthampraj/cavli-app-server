@@ -71,7 +71,9 @@ export default class ClientTask {
             "serviceInfo.doj": 1,
             "serviceInfo.sourceOfFund": 1,
             "serviceInfo.documentCollected": 1,
-        } : {}
+        } : {
+            "serviceInfo.interestedCourse": 1
+        }
         const field: { [key: string]: any } = {};
 
         if (fields?.isActive) {
