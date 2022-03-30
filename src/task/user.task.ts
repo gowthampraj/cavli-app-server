@@ -1,9 +1,9 @@
 import DbClient = require('../mongoclient');
 import { removeId, removePassword } from '../utils/utils';
-import bcryptjs from 'bcryptjs';
 import { Cursor, ObjectID, ObjectId } from 'mongodb';
 import logging from '../config/logging';
 import { UserModel } from '../models/user.model';
+import { PasswordGenerator } from '../middleware/password-generater';
 
 const NAMESPACE = 'USER';
 const COLLECTION_NAME_USER = 'user';
@@ -24,7 +24,7 @@ export default class UserTask {
         const user: UserModel = new UserModel(data);
         const isUserNameExist = await this.search({ username: user.username }, true);
         if (!isUserNameExist)
-            var bcryptjsHasedPassword = await bcryptjs.hash(user.password, 1)
+            var bcryptjsHasedPassword = await new PasswordGenerator(user.password).generate();
 
         return new Promise((resolve, reject) => {
             if (isUserNameExist) {
@@ -165,7 +165,7 @@ export default class UserTask {
 
             let payLoad: UserModel = new UserModel(data);
             if (payLoad.password) {
-                const bcryptjsHasedPassword = await bcryptjs.hash(payLoad.password, 1)
+                const bcryptjsHasedPassword = await new PasswordGenerator(payLoad.password).generate();
                 payLoad = { ...payLoad, password: bcryptjsHasedPassword }
             }
 

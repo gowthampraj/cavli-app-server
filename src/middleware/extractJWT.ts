@@ -81,7 +81,7 @@ function manageUserPermissions(user: UserModel, req: Request): boolean {
 
 function checkPermission(user: UserModel, type: PermissionObj): boolean {
     /** If user is ADMIN or has permission */
-    return user.userRole === UserRoles.ADMIN || !!user.permission?.[type];
+    return user.userRole?.includes(UserRoles.ADMIN) || !!user.permission?.[type];
 }
 // export 
 

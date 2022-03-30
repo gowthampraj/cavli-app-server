@@ -5,7 +5,7 @@ export class UserModel {
     password: string;
     name?: string;
     isActive?: boolean;
-    userRole?: UserRoles;
+    userRole?: UserRoles[];
     permission: Permission;
     constructor(i: UserModel) {
         if (i._id)
