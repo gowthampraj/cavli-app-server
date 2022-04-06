@@ -30,9 +30,21 @@ export class Permission {
     login?: boolean;
     manage?: boolean;
     changeStatus?: boolean;
+    extra?: boolean;
+    company?: boolean;
+    service?: boolean;
+    course?: boolean;
+    country?: boolean;
+    university?: boolean;
     constructor(i: Permission) {
         this.login = i?.login;
         this.manage = i?.manage;
         this.changeStatus = i?.changeStatus;
+        this.extra = i?.extra;
+        this.company = i?.company;
+        this.service = i?.service;
+        this.course = i?.course;
+        this.country = i?.country;
+        this.university = i?.university;
     }
 }

@@ -32,7 +32,7 @@ export default class ServiceProvidedRouter {
         /**
         * delete
         */
-        this.router.delete('/:universityId', (req: Request, res: Response) => {
+        this.router.delete('/:id', (req: Request, res: Response) => {
             serviceProvidedService.delete(req, res);
         });
 

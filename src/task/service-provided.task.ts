@@ -107,14 +107,14 @@ export default class ServiceProvidedTask {
 
     }
 
-    public delete(universityId?: any) {
+    public delete(id?: any) {
 
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection(COLLECTION_NAME_SERVICE_PROVIDED).deleteOne(
-                            { _id: new ObjectId(universityId) }, function (err: any, country: any) {
+                            { _id: new ObjectId(id) }, function (err: any, country: any) {
 
                                 if (country.deletedCount) {
                                     resolve({ status: 200, msg: "Deleted" });

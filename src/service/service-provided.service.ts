@@ -60,7 +60,7 @@ export default class ServiceProvidedService {
     }
 
     public delete(req: Request, res: Response) {
-        this.serviceProvidedTask.delete(req.params.universityId)
+        this.serviceProvidedTask.delete(req.params.id)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
