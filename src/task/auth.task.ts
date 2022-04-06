@@ -1,5 +1,5 @@
 // import { Cursor, ObjectID } from 'mongodb';
-import { removeId } from '../utils/utils';
+import { removeId, removePassword } from '../utils/utils';
 import bcryptjs from 'bcryptjs';
 import logging from '../config/logging';
 import signJWT from '../middleware/signJTW';
@@ -43,7 +43,7 @@ export default class AuthTask {
                                 logging.info(NAMESPACE, `token for [${isUserNameExist[0]._id}] is [${token}]`);
                                 resolve({ code: 200, token: token, data: { ...isUserNameExist[0] } });
                                 if (userList[0]?.loginNeeded) {
-                                    this.userTask.update(userList[0], false);
+                                    this.userTask.update(removePassword(userList[0]), false);
                                 }
                             }
                         });

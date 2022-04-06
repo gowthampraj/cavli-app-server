@@ -1,7 +1,7 @@
 export class ClientModel {
     _id?: string;
     ackNo?: string;
-    company?:string;
+    company?: string;
     firstName?: string;
     middleName?: string;
     lastName?: string;
@@ -18,8 +18,10 @@ export class ClientModel {
     nationality: Nationality;
     comment?: string;
     createdBy?: string;
+    createdId?: string;
     createdAt?: Date;
     modifiedBy?: string;
+    modifiedId?: string;
     modifiedAt?: Date;
     lastContacted?: Date;
     emergencyContact: Contact;
@@ -45,7 +47,9 @@ export class ClientModel {
         this.comment = input.comment;
         this.createdAt = input.createdAt;
         this.createdBy = input.createdBy;
+        this.createdId = input.createdId;
         this.modifiedAt = input.modifiedAt;
+        this.modifiedId = input.modifiedId;
         this.modifiedBy = input.modifiedBy;
         this.lastContacted = input.lastContacted;
         this.emergencyContact = new Contact(input?.emergencyContact)
