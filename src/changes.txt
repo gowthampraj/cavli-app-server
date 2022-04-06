@@ -1,0 +1,4 @@
+Changes in data base schema
+---------------------------------------------
+user model user role from string ==> string[]
+client created by into userId
