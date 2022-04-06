@@ -63,7 +63,7 @@ export default class ClientTask {
 
     getAll(fields?: any, isExport?: boolean) {
 
-        const extraProj = isExport ? { permanentAddress: 1, mailingAddress: 1, ackNo: 1, gender: 1, status: 1, passport: 1, nationality: 1, emergencyContact: 1, lastContacted: 1 } : {}
+        const extraProj = isExport ? { permanentAddress: 1, mailingAddress: 1, gender: 1, status: 1, passport: 1, nationality: 1, emergencyContact: 1, lastContacted: 1 } : {}
         const extraProj2 = isExport ? {
             "serviceInfo.interestedCourse": 1,
             "serviceInfo.payment": 1,
@@ -120,6 +120,7 @@ export default class ClientTask {
                     contactNumber: 1,
                     isActive: 1,
                     createdAt: 1,
+                    ackNo: 1,
                     ...extraProj
                 }
             },
@@ -171,7 +172,7 @@ export default class ClientTask {
 
         /** Find search keys and push into the query */
         const searchParams = new URLSearchParams(fields);
-        const searchKeys = ['firstName', 'middleName', 'lastName', 'emailIds', 'contactNumber'];
+        const searchKeys = ['firstName', 'middleName', 'lastName', 'emailIds', 'contactNumber', 'ackNo'];
         const filter: any = {};
         searchKeys.forEach(key => {
             const hasValue = searchParams.has(key);

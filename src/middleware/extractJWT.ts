@@ -112,6 +112,14 @@ function checkPermission(user: UserModel, type: PermissionObj): boolean {
 export enum PermissionObj {
     CHANGE_CLIENT_STATUS = 'changeStatus',
     LOGIN = 'login',
+    MANAGE_USER = 'manage',
+    EXTRA_DATA = 'extra',
+    COMPANY = 'company',
+    SERVICE_PROVIDED = 'service',
+    COURSE = 'course',
+    COUNTRY = 'country',
+    UNIVERSITY = 'university',
+    EXPORT_EXCEL = 'exportExcel'
 }
 
 export default extractJWT;
