@@ -13,6 +13,7 @@ import ClientProfileRouter from './router/client-profile.router';
 import CompanyRouter from './router/company.router';
 import ExportRouter from './router/export.router';
 import ExtraRouter from './router/extra.router';
+import NotificationRouter from './router/notification.router';
 
 export default class ServerRoute {
     private static instance: ServerRoute
@@ -30,6 +31,7 @@ export default class ServerRoute {
     private companyRouter: CompanyRouter;
     private exportRouter: ExportRouter;
     private extraRouter: ExtraRouter;
+    private notificationRouter: NotificationRouter;
     private constructor() {
         this.clientRouter = new ClientRouter();
         this.clientServiceInfoRouter = new ClientServiceInfoRouter();
@@ -44,6 +46,7 @@ export default class ServerRoute {
         this.companyRouter = new CompanyRouter();
         this.exportRouter = new ExportRouter();
         this.extraRouter = new ExtraRouter();
+        this.notificationRouter = new NotificationRouter();
     }
 
     public static getInstance(): ServerRoute {
@@ -71,6 +74,7 @@ export default class ServerRoute {
         expressApp.use('/client-service-info', extractJWT, this.clientServiceInfoRouter.router);
         expressApp.use('/client-profile', extractJWT, this.clientProfileRouter.router);
         expressApp.use('/comment', extractJWT, this.commentRouter.router);
+        expressApp.use('/notification', extractJWT, this.notificationRouter.router);
 
         /**
          * Config / Helper 
