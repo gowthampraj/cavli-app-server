@@ -7,6 +7,7 @@ export class UserModel {
     isActive?: boolean;
     userRole?: UserRoles[];
     permission: Permission;
+    loginNeeded: boolean;
     constructor(i: UserModel) {
         if (i._id)
             this._id = i._id;
@@ -17,6 +18,7 @@ export class UserModel {
         this.userRole = i.userRole;
         this.permission = new Permission(i?.permission);
         this.company = i.company;
+        this.loginNeeded = i.loginNeeded;
     }
 }
 

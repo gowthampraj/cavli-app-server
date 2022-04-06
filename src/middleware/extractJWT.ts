@@ -28,16 +28,37 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
      * get user from db
      */
     const user: any = await userTask.getById(userId);
+
+    /**
+     * Relogin needed
+     */
+    if (user?.loginNeeded) {
+        return res.status(401).json({
+            message: 'Re login needed'
+        });
+    }
+
+    /**
+     * Check isActive
+     */
     if (!user?.isActive) {
         return res.status(401).json({
             message: 'User is not active please contact admin'
         });
     }
+
+    /**
+     * Check login permission
+     */
     if (!user?.permission?.login) {
         return res.status(401).json({
             message: 'User is invalid'
         });
     }
+
+    /**
+     * Permission from req.body.action
+     */
     const hasPermission = manageUserPermissions(user, req);
     if (!hasPermission) {
         return res.status(403).json({
@@ -45,6 +66,9 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
         });
     }
 
+    /**
+     * Validated token 
+     */
     if (token) {
         jwt.verify(token, config.server.token.secret, (error, decoded) => {
             if (error) {

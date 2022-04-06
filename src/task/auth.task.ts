@@ -41,7 +41,10 @@ export default class AuthTask {
                                 reject({ code: 400, msg: "Something went wrong!" });
                             } else if (token) {
                                 logging.info(NAMESPACE, `token for [${isUserNameExist[0]._id}] is [${token}]`);
-                                resolve({ code: 200, token: token, data: { ...isUserNameExist[0] } })
+                                resolve({ code: 200, token: token, data: { ...isUserNameExist[0] } });
+                                if (userList[0]?.loginNeeded) {
+                                    this.userTask.update(userList[0], false);
+                                }
                             }
                         });
                     }

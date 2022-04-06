@@ -156,7 +156,7 @@ export default class UserTask {
 
     }
 
-    public update(data: any) {
+    public update(data: any, isReLoginNeeded?: boolean) {
 
         return new Promise(async (resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {
@@ -164,6 +164,7 @@ export default class UserTask {
             }
 
             let payLoad: UserModel = new UserModel(data);
+            payLoad.loginNeeded = isReLoginNeeded ?? true; /** Set as login needed again */
             if (payLoad.password) {
                 const bcryptjsHasedPassword = await new PasswordGenerator(payLoad.password).generate();
                 payLoad = { ...payLoad, password: bcryptjsHasedPassword }
