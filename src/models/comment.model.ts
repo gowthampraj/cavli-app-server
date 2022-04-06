@@ -5,6 +5,7 @@ export class CommentModel {
     comment?: string; // comment
     clientId: string;
     type: CommentType;
+    createdId?: string;
     constructor(i: CommentModel) {
         if (i._id)
             this._id = i._id;
@@ -13,7 +14,8 @@ export class CommentModel {
         this.createdAt = i.createdAt ?? new Date();
         this.createdBy = i.createdBy ?? 'UN_KNOWN';
         this.clientId = i.clientId;
-        this.type = i.type
+        this.type = i.type;
+        this.createdId = i?.createdId;
     }
 }
 export enum CommentType {

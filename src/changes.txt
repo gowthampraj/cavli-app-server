@@ -1,4 +1,5 @@
 Changes in data base schema
 ---------------------------------------------
 user model user role from string ==> string[]
+createdId and modified Id added
 client created by into userId

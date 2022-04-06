@@ -3,6 +3,7 @@ import { Cursor } from 'mongodb';
 import DbClient = require('../mongoclient');
 import { CommentModel } from '../models/comment.model';
 import logging from '../config/logging';
+import NotificationService from '../service/notification.service';
 
 const NAMESPACE = 'COMMENTS';
 const COLLECTION_NAME_COMMENT = 'comments';
@@ -28,7 +29,9 @@ export default class CommentTask {
                     try {
                         connection.collection(COLLECTION_NAME_COMMENT).insertOne(payLoad, function (err: any, res: any) {
                             if (res.insertedCount) {
-                                resolve(res.insertedCount)
+                                resolve(res.insertedCount);
+                                const notification = new NotificationService();
+                                notification.createNotificationFromComment(payLoad);
                             }
                         });
                     } catch (error) {

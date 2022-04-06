@@ -15,10 +15,7 @@ export default class NotificationTask {
     }
 
 
-    async create(data?: any) {
-        /**
-        * search for notification name
-        */
+    async create(data: any) {
         const notification: NotificationModel = new NotificationModel(data);
         return new Promise(async (resolve, reject) => {
             if (!data || Object.keys(data).length === 0) {

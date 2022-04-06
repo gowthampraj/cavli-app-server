@@ -5,7 +5,7 @@ export class NotificationModel {
     metaData?: string;
     message?: string;
     isRead?: boolean;
-    createdAt?: string;
+    createdAt?: Date;
     createdBy?: string;
     createdId?: string;
     constructor(i: NotificationModel) {

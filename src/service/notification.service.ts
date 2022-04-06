@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import { ResponseModel } from "../models/response.model";
 import logging from "../config/logging";
 import NotificationTask from "../task/notification.task";
+import { NotificationModel } from "../models/notification.model";
+import { CommentModel, CommentType } from "../models/comment.model";
+import ClientTask from "../task/client.task";
+import ClientServiceInfoTask from "../task/client-service-info.task";
+import { ServiceProvided } from "../models/service-provided.model";
 
 const NAMESPACE = 'EXTRA';
 
@@ -80,5 +85,47 @@ export default class NotificationService {
                 logging.warn(NAMESPACE, `NotificationService.update ${JSON.stringify(err)}`);
                 return res.status(500).json(errorData)
             });
+    }
+
+    /**
+     * createNotificationFromComment
+     */
+    public async createNotificationFromComment(comment: CommentModel) {
+        try {
+            const clientId = comment.clientId;
+            let userIds: string[] | any = [];
+            /** Create notification datas */
+            // 1. get client and client info
+            const clientTask = new ClientTask();
+            const clientServiceInfoTask = new ClientServiceInfoTask();
+
+            const data: any[] = await Promise.all([
+                clientTask.getById(clientId),
+                clientServiceInfoTask.getById(clientId)
+            ]);
+            // 2. filter out userId
+            userIds.push(data[0]?.createdId);
+            data[1]?.serviceProvided.forEach((s: ServiceProvided) => { userIds.push(...s.staffAllocated || []) });
+            /** remove Undefined */
+            userIds = userIds.filter((x: string) => !!x);
+            /** Remove duplicates */
+            userIds = Array.from(new Set(userIds));
+
+            const notificationPromise: any[] = userIds.map((user: string) =>
+                this.notificationTask.create({
+                    userId: user,
+                    clientId: comment.clientId,
+                    metaData: comment.type,
+                    message: comment.comment,
+                    isRead: false,
+                    createdAt: comment.createdAt,
+                    createdBy: comment.createdBy,
+                    createdId: comment.createdId
+                }));
+
+            await Promise.all(notificationPromise);
+        } catch (error) {
+            logging.error(NAMESPACE, `NotificationService.createNotification ${JSON.stringify(error)}`);
+        }
     }
 }

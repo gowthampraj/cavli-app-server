@@ -45,6 +45,7 @@ export default class ClientTask {
                                             createdAt: payLoad.createdAt ?? new Date(),
                                             createdBy: payLoad.createdBy ?? 'UNKOWN',
                                             type: CommentType.CREATE_NEW_CLIENT,
+                                            createdId: payLoad.createdId
                                         }
                                     )
                                     self.createComment(commentPayload);
