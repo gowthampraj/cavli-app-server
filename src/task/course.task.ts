@@ -80,12 +80,9 @@ export default class CourseTask {
                 .then((connection: any) => {
                     try {
                         connection.collection(COLLECTION_NAME_COURSE).find({},
-                            function (err: any, users: Cursor) {
-                                users?.toArray().then((userList: any) => {
-                                    userList.forEach((x: any) => {
-                                        x = removePassword(x);
-                                    })
-                                    resolve(userList);
+                            function (err: any, course: Cursor) {
+                                course?.toArray().then((courseList: any) => {
+                                    resolve(courseList);
                                 });
                             });
                     } catch (error) {

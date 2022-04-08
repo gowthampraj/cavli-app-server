@@ -86,11 +86,8 @@ export default class CountryTask {
                     try {
                         connection.collection(COLLECTION_NAME_COUNTRY).find({},
                             function (err: any, country: Cursor) {
-                                country.toArray().then((userList: any) => {
-                                    userList.forEach((x: any) => {
-                                        x = removePassword(x);
-                                    })
-                                    resolve(userList);
+                                country.toArray().then((countryList: any) => {
+                                    resolve(countryList);
                                 });
                             });
                     } catch (error) {
