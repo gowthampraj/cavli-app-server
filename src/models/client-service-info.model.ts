@@ -9,6 +9,7 @@ export class ClientServiceInfoModel {
     interestedCourse: InterestedCourse[];
     doj: Date;
     sourceOfFund: string;
+    company?: string;
     constructor(i: ClientServiceInfoModel) {
         if (i._id) this._id = i._id;
         this.clientId = i.clientId;
@@ -18,6 +19,7 @@ export class ClientServiceInfoModel {
         this.interestedCourse = i.interestedCourse?.length ? i.interestedCourse.map(x => new InterestedCourse(x)) : [];
         this.doj = i.doj;
         this.sourceOfFund = i.sourceOfFund;
+        this.company =i.company;
     }
 }
 export class InterestedCourse {

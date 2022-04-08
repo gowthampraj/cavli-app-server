@@ -4,3 +4,5 @@ user model user role from string ==> string[]
 createdId and modified Id added
 client created by into userId
 new packages
+notification added
+company added in client info
