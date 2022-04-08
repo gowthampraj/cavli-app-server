@@ -170,7 +170,8 @@ export default class ClientServiceInfoTask {
             const filter = [
                 {
                     '$match': {
-                        'payment.isPaid': false
+                        'payment.isPaid': false,
+                        'payment.feeTotal': { $gt: 0 }
                     }
                 },
                 {

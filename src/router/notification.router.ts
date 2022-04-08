@@ -25,7 +25,7 @@ export default class NotificationRouter {
         /**
          * get by client Id
          */
-        this.router.get('/id', (req: Request, res: Response) => {
+        this.router.get('/:userId', (req: Request, res: Response) => {            
             notificationService.getById(req, res);
         });
 

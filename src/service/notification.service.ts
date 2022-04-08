@@ -7,6 +7,7 @@ import { CommentModel, CommentType } from "../models/comment.model";
 import ClientTask from "../task/client.task";
 import ClientServiceInfoTask from "../task/client-service-info.task";
 import { ServiceProvided } from "../models/service-provided.model";
+import { extractDataFromPromiseToAllSettlePolyfill, promiseToAllSettlePolyfill } from "../utils/utils";
 
 const NAMESPACE = 'EXTRA';
 
@@ -42,7 +43,7 @@ export default class NotificationService {
     }
 
     public getById(req: Request, res: Response) {
-        this.notificationTask.getById(req.params.id)
+        this.notificationTask.getById(req.params.userId, req.query)
             .then((response: any) => {
                 const responseData: ResponseModel = {
                     status: 'Success',
@@ -99,13 +100,16 @@ export default class NotificationService {
             const clientTask = new ClientTask();
             const clientServiceInfoTask = new ClientServiceInfoTask();
 
-            const data: any[] = await Promise.all([
+            const result = await promiseToAllSettlePolyfill([
                 clientTask.getById(clientId),
                 clientServiceInfoTask.getById(clientId)
-            ]);
+            ])
             // 2. filter out userId
-            userIds.push(data[0]?.createdId);
-            data[1]?.serviceProvided.forEach((s: ServiceProvided) => { userIds.push(...s.staffAllocated || []) });
+            const userData = extractDataFromPromiseToAllSettlePolyfill(result[0]);
+            if (userData?.createdId)
+                userIds.push(userData.createdId);
+            const serviceInfo = extractDataFromPromiseToAllSettlePolyfill(result[1]);
+            serviceInfo?.serviceProvided.forEach((s: ServiceProvided) => { userIds.push(...s.staffAllocated || []) });
             /** remove Undefined */
             userIds = userIds.filter((x: string) => !!x);
             /** Remove duplicates */

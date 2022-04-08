@@ -27,11 +27,11 @@ export default class CommentTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_COMMENT).insertOne(payLoad, function (err: any, res: any) {
+                        connection.collection(COLLECTION_NAME_COMMENT).insertOne(payLoad, async function (err: any, res: any) {
                             if (res.insertedCount) {
-                                resolve(res.insertedCount);
                                 const notification = new NotificationService();
-                                notification.createNotificationFromComment(payLoad);
+                                await notification.createNotificationFromComment(payLoad);
+                                resolve(res.insertedCount);
                             }
                         });
                     } catch (error) {

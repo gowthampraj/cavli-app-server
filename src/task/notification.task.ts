@@ -42,14 +42,29 @@ export default class NotificationTask {
 
     };
 
-    public getById(clientId: string) {
+    public getById(userId: string, queyParams: any) {
+
+        let query: any = {};
+        let limit: any = {}
+        const readAll = queyParams.all === 'true'
+        if (!readAll) {
+            query.isRead = false;
+        } else {
+            /** If read all limit must be set */
+            limit.limit = 1000;
+        }
 
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
                         connection.collection(COLLECTION_NAME_NOTIFICATION).find(
-                            { clientId },
+                            { userId, ...query },
+                            {
+                                sort: { createdAt: -1 },
+                                ...limit
+                            }
+                            ,
                             function (err: any, notification: Cursor) {
                                 notification.toArray().then((extraList: any) => {
                                     resolve(extraList);
