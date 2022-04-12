@@ -20,7 +20,7 @@ export default class ExportRouter {
          */
         this.router.get('/', (req: Request, res: Response) => {
             switch (req.query?.type) {
-                case 'PDF':
+                case 'EXCEL':
                     excelService.exportPDF(req, res);
                     break;
 

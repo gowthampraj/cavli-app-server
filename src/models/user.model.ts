@@ -23,7 +23,6 @@ export class UserModel {
 }
 
 export enum UserRoles {
-    ADMIN = 'ADMIN',
     NORMAL = 'NORMAL',
     STAFF = 'STAFF',
 }

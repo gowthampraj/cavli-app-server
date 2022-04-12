@@ -1,8 +1,26 @@
 Changes in data base schema
 ---------------------------------------------
 user model user role from string ==> string[]
-createdId and modified Id added
+createdId and modified Id added in client
 client created by into userId
 new packages
 notification added
 company added in client info
+removed ADMIN
+
+
+Bug
+--------------------------------
+[F] UI select client via date range ==> go to advance ==> go back ==> list alters
+
+
+TODO
+---------------------------
+[W] No need of ADMIN
+manage ALL while search client
+Add bramch details in client page
+get excel fields from sobin
+
+[W] Working
+[D] Done
+[F] Fixed
