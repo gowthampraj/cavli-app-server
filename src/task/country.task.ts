@@ -84,7 +84,9 @@ export default class CountryTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_COUNTRY).find({},
+                        connection.collection(COLLECTION_NAME_COUNTRY).find(
+                            {},
+                            { sort: { name: 1 } },
                             function (err: any, country: Cursor) {
                                 country.toArray().then((countryList: any) => {
                                     resolve(countryList);

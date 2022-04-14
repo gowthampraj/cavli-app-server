@@ -87,7 +87,9 @@ export default class UniversityTask {
             this.mongoConnection.connect()
                 .then((connection: any) => {
                     try {
-                        connection.collection(COLLECTION_NAME_UNIVERSITY).find({},
+                        connection.collection(COLLECTION_NAME_UNIVERSITY).find(
+                            {},
+                            { sort: { name: 1 } },
                             function (err: any, university: Cursor) {
                                 university.toArray().then((universityList: any) => {
                                     resolve(universityList);

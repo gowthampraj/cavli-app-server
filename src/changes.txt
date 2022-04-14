@@ -16,10 +16,14 @@ Bug
 
 TODO
 ---------------------------
-[W] No need of ADMIN
-manage ALL while search client
+[D] No need of ADMIN
+[D] manage ALL while search client
 Add bramch details in client page
 get excel fields from sobin
+change dashboard
+[D] Add search for course
+[W] Add search for uni
+Reset store in interval
 
 [W] Working
 [D] Done

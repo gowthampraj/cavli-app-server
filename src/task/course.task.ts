@@ -80,6 +80,7 @@ export default class CourseTask {
                 .then((connection: any) => {
                     try {
                         connection.collection(COLLECTION_NAME_COURSE).find({},
+                            { sort: { name: 1 } },
                             function (err: any, course: Cursor) {
                                 course?.toArray().then((courseList: any) => {
                                     resolve(courseList);
