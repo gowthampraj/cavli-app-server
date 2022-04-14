@@ -187,7 +187,7 @@ export default class ClientTask {
         }
 
         /** Course status */
-        const courseStatus = fields.courseStatus.split(",");
+        const courseStatus = fields?.courseStatus?.split(",");
         const courseName = fields?.courseName?.split(",");
         const appliedCountry = fields?.appliedCountry?.split(",");
         const intake = fields?.intake?.split(",");
