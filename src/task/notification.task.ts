@@ -42,40 +42,51 @@ export default class NotificationTask {
 
     };
 
-    public getById(userId: string, queyParams: any) {
-
-        let query: any = {};
-        let limit: any = {}
+    public async getById(userId: string, queyParams: any) {
         const readAll = queyParams.all === 'true'
-        if (!readAll) {
-            query.isRead = false;
-        } else {
-            /** If read all limit must be set */
-            limit.limit = 1000;
-        }
 
-        return new Promise((resolve, reject) => {
-            this.mongoConnection.connect()
-                .then((connection: any) => {
-                    try {
-                        connection.collection(COLLECTION_NAME_NOTIFICATION).find(
-                            { userId, ...query },
-                            {
-                                sort: { createdAt: -1 },
-                                ...limit
-                            }
-                            ,
-                            function (err: any, notification: Cursor) {
-                                notification.toArray().then((extraList: any) => {
-                                    resolve(extraList);
-                                });
-                            });
-                    } catch (error) {
-                        logging.info(NAMESPACE, `Unable to connect to db :`, JSON.stringify(error));
-                    }
-                })
-                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
-        });
+        const query: any = [
+            {
+                '$match': {
+                    ...(!readAll ? { 'isRead': false } : {}),
+                    // 'isRead': false,
+                    'userId': userId
+                }
+            },
+            { '$sort': { 'createdAt': -1 } },
+            ...(readAll ? [{ '$limit': 1000 }] : []),
+            {
+                '$lookup': {
+                    from: 'client',
+                    let: { 'clientId': '$clientId' },
+                    pipeline: [
+                        { "$addFields": { "articleId": { "$toString": "$_id" } } },
+                        { "$match": { "$expr": { "$eq": ["$articleId", "$$clientId"] } } }
+                        , { "$project": { 'firstName': 1, 'lastName': 1, 'middleName': 1, 'isActive': 1 } }
+                    ],
+                    as: 'clientInfo'
+                }
+            },
+            {
+                '$project': {
+                    clientId: 1,
+                    _id: -1,
+                    createdAt: 1,
+                    company: 1,
+                    createdBy: 1,
+                    createdId: 1,
+                    isRead: 1,
+                    message: 1,
+                    metaData: 1,
+                    userId: 1,
+                    clientInfo: { $first: "$clientInfo" }
+                }
+            }
+        ];
+
+        const conn = await this.mongoConnection.connect();
+        const result = conn.collection(COLLECTION_NAME_NOTIFICATION).aggregate(query);
+        return await result.toArray();
 
     }
 

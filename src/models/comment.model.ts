@@ -4,6 +4,7 @@ export class CommentModel {
     createdBy: string;
     comment?: string; // comment
     clientId: string;
+    company?: string;
     type: CommentType;
     createdId?: string;
     constructor(i: CommentModel) {
@@ -14,6 +15,7 @@ export class CommentModel {
         this.createdAt = i.createdAt ?? new Date();
         this.createdBy = i.createdBy ?? 'UN_KNOWN';
         this.clientId = i.clientId;
+        this.company = i.company;
         this.type = i.type;
         this.createdId = i?.createdId;
     }

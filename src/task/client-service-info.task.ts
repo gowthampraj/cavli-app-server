@@ -164,19 +164,31 @@ export default class ClientServiceInfoTask {
      * Dash board
      */
 
-    async clientByPayment() {
+    async clientByPayment(qParms: any) {
         try {
+
+            let match: any = {};
+
+            const fieldArray = ['company'];
+            fieldArray.forEach(x => {
+                if (qParms[x]) {
+                    match[x] = qParms[x];
+                }
+            });
+
 
             const filter = [
                 {
                     '$match': {
+                        ...match,
                         'payment.isPaid': false,
                         'payment.feeTotal': { $gt: 0 }
                     }
                 },
                 {
                     '$sort': {
-                        'doj': -1
+                        // 'doj': -1
+                        'payment.nextDueDate': 1
                     }
                 },
                 {

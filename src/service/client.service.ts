@@ -151,4 +151,25 @@ export default class ClientService {
             });
     }
 
+    public clientCount(req: Request, res: Response) {
+        this.clientTask.clientCount(req.query)
+            .then((response: any) => {
+                const responseData: ResponseModel = {
+                    status: 'Success',
+                    code: response?.status ?? 200,
+                    data: response,
+                    message: response?.msg
+                }
+                return res.status(200).json(responseData)
+            })
+            .catch((err: any) => {
+                const errorData: ResponseModel = {
+                    status: 'Fail',
+                    code: 500,
+                    data: err ?? 'Internal Server error',
+                }
+                logging.error(NAMESPACE, `ClientService.clientCount ${JSON.stringify(err)}`);
+                return res.status(500).json(errorData)
+            });
+    }
 }

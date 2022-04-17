@@ -124,7 +124,8 @@ export default class NotificationService {
                     isRead: false,
                     createdAt: comment.createdAt,
                     createdBy: comment.createdBy,
-                    createdId: comment.createdId
+                    createdId: comment.createdId,
+                    company: comment.company
                 }));
 
             await Promise.all(notificationPromise);

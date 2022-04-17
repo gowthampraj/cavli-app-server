@@ -45,7 +45,8 @@ export default class ClientTask {
                                             createdAt: payLoad.createdAt ?? new Date(),
                                             createdBy: payLoad.createdBy ?? 'UNKOWN',
                                             type: CommentType.CREATE_NEW_CLIENT,
-                                            createdId: payLoad.createdId
+                                            createdId: payLoad.createdId,
+                                            company: payLoad.company
                                         }
                                     )
                                     self.createComment(commentPayload);
@@ -384,15 +385,32 @@ export default class ClientTask {
     /**
      * getDashboard
      */
-    public getDashboard(fields?: any) {
-        const createdAt = JSON.parse(fields?.createdAt || '{}');
+    public getDashboard(qParms?: any) {
 
-        let createdAtQuery = {}
-        if (createdAt.startDate && createdAt.endDate) {
-            createdAtQuery = {
-                "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate }
+        const createdAt = JSON.parse(qParms?.createdAt || '{}');
+
+        let match: any = {};
+
+        const fieldArray = ['company'];
+        fieldArray.forEach(x => {
+            if (qParms[x]) {
+                match[x] = qParms[x];
             }
+        });
+
+        if (createdAt.startDate && createdAt.endDate) {
+            match['createdAt'] = { $gte: createdAt.startDate, $lte: createdAt.endDate }
         }
+
+
+        // const createdAt = JSON.parse(fields?.createdAt || '{}');
+
+        // let createdAtQuery = {}
+        // if (createdAt.startDate && createdAt.endDate) {
+        //     createdAtQuery = {
+        //         "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate }
+        //     }
+        // }
         return new Promise((resolve, reject) => {
             this.mongoConnection.connect()
                 .then((connection: any) => {
@@ -400,7 +418,7 @@ export default class ClientTask {
                         connection.collection(COLLECTION_NAME_CLIENT)
                             .find(
                                 {
-                                    ...createdAtQuery
+                                    ...match
                                 },
                                 {
                                     projection: {
@@ -425,6 +443,58 @@ export default class ClientTask {
         });
     }
 
+    /**
+     * clientCount
+     */
+    public clientCount(qParms: any) {
+        const createdAt = JSON.parse(qParms?.createdAt || '{}');
+
+        const query: any[] = [
+            { $count: 'count' }
+        ];
+
+        let match: any = {};
+
+        const fieldArray = ['company'];
+        fieldArray.forEach(x => {
+            if (qParms[x]) {
+                match[x] = qParms[x];
+            }
+        });
+
+        if (createdAt.startDate && createdAt.endDate) {
+            match['createdAt'] = { $gte: createdAt.startDate, $lte: createdAt.endDate }
+        }
+
+        if (Object.keys(match)?.length) {
+            query.unshift(
+                { $match: match }
+            );
+        }
+
+        return new Promise((resolve, reject) => {
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_CLIENT).aggregate(
+                            query,
+                            async (err: any, data: AggregationCursor) => {
+                                if (err) {
+                                    reject(JSON.stringify(err));
+                                } else {
+                                    const result = await data.next();
+                                    resolve(result);
+                                }
+                            }
+                        )
+                    } catch (error) {
+                        reject(JSON.stringify(error));
+                        logging.error(NAMESPACE, 'UserService.clientCount', JSON.stringify(error));
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
+    }
 
     createComment(comment: CommentModel) {
         this.commentTask.create(comment)

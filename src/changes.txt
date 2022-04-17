@@ -20,11 +20,21 @@ TODO
 [D] manage ALL while search client
 Add bramch details in client page
 get excel fields from sobin
-change dashboard
 [D] Add search for course
-[W] Add search for uni
+[D] Add search for uni
 Reset store in interval
+add autocomplete in payment type selection
+[D] add comment in course
 
+dashboard
+=============================
+manage company
+created at filter
+widgets need ==> 
+    1. All client count
+    2. 
+
+-----------------------------
 [W] Working
 [D] Done
 [F] Fixed

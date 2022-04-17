@@ -128,7 +128,7 @@ export default class ClientServiceInfoService {
 
     public async clientByPayment(req: Request, res: Response) {
         try {
-            const response = await this.clientServiceInfoTask.clientByPayment();
+            const response = await this.clientServiceInfoTask.clientByPayment(req.query);
             const responseData: ResponseModel = {
                 status: 'Success',
                 code: 200,

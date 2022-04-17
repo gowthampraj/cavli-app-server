@@ -37,6 +37,13 @@ export default class ClientRouter {
         });
 
         /**
+        * count
+        */
+        this.router.get('/count', (req: Request, res: Response) => {
+            clientService.clientCount(req, res);
+        });
+
+        /**
         * get client by ID
         */
         this.router.get('/:clientId', (req: Request, res: Response) => {

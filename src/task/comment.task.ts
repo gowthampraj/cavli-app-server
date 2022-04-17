@@ -1,7 +1,7 @@
 
 import { Cursor } from 'mongodb';
 import DbClient = require('../mongoclient');
-import { CommentModel } from '../models/comment.model';
+import { CommentModel, CommentType } from '../models/comment.model';
 import logging from '../config/logging';
 import NotificationService from '../service/notification.service';
 
@@ -29,8 +29,10 @@ export default class CommentTask {
                     try {
                         connection.collection(COLLECTION_NAME_COMMENT).insertOne(payLoad, async function (err: any, res: any) {
                             if (res.insertedCount) {
-                                const notification = new NotificationService();
-                                await notification.createNotificationFromComment(payLoad);
+                                if (payLoad.type === CommentType.COMMENT) {
+                                    const notification = new NotificationService();
+                                    await notification.createNotificationFromComment(payLoad);
+                                }
                                 resolve(res.insertedCount);
                             }
                         });

@@ -8,6 +8,7 @@ export class NotificationModel {
     createdAt?: Date;
     createdBy?: string;
     createdId?: string;
+    company?: string;
     constructor(i: NotificationModel) {
         if (i._id)
             this._id = i._id;
@@ -19,5 +20,6 @@ export class NotificationModel {
         this.createdAt = i.createdAt;
         this.createdBy = i.createdBy;
         this.createdId = i.createdId;
+        this.company = i.company;
     }
 }
