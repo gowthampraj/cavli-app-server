@@ -39,6 +39,7 @@ export class Permission {
     university?: boolean;
     exportExcel?: boolean;
     searchCourse?: boolean;
+    serviceAmount?: boolean;
     constructor(i: Permission) {
         this.login = i?.login;
         this.manage = i?.manage;
@@ -51,5 +52,6 @@ export class Permission {
         this.university = i?.university;
         this.exportExcel = i.exportExcel;
         this.searchCourse = i?.searchCourse;
+        this.serviceAmount = i?.serviceAmount;
     }
 }
