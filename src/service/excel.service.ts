@@ -26,8 +26,6 @@ export default class ExcelService {
                         code: 500,
                         data: err ?? 'Internal Server error',
                     }
-                    console.log(err);
-
                     logging.warn(NAMESPACE, `ClientService.getAll ${JSON.stringify(err)}`);
                     return res.status(500).json(errorData)
                 });
@@ -37,8 +35,6 @@ export default class ExcelService {
                 code: 500,
                 data: error ?? 'Internal Server error',
             }
-            console.log(error);
-
             logging.warn(NAMESPACE, `ClientService.getAll ${JSON.stringify(error)}`);
             return res.status(500).json(errorData)
         }
@@ -94,7 +90,17 @@ export default class ExcelService {
             { "name": "Contact Number", "space": 2, "order": 2, "mapper": [{ "key": "contactNumber", "action": "ARRAY_COMMA" }] },
             { "name": "Email Id", "space": 2, "order": 2, "mapper": [{ "key": "emailIds", "action": "ARRAY_COMMA" }] },
             { "name": "Gender", "space": 1, "order": 2, "mapper": [{ "key": "gender", "action": "STR" }] },
-            // { "name": "Service Provided", "space": 3, "order": 2, "mapper": [{ "key": "serviceInfo.serviceName", "action": "STR" }] }
+            {
+                "name": "Course - Country - University", "space": 4, "order": 2, "mapper": [{
+                    "key": "serviceInfo.interestedCourse", "action": "ARRAY_KEYS",
+                    "keys": [
+                        'courseName',
+                        'appliedCountry',
+                        'appliedUni'
+                    ],
+                    "joinby": '-'
+                }]
+            }
         ];
     }
 
@@ -110,13 +116,17 @@ export default class ExcelService {
             let columnIndex = 1;
             jsonToExcelMapper.forEach(column => {
                 /** a) Generate Cell Value */
-                const data = this._generateCellValue(column.mapper, row);
+                const value = this._generateCellValue(column.mapper, row);
                 /** b) Add value to cell */
                 /** c) how the excel looks */
-                if (column.type === 'DATE' && data) {
-                    ws.cell(rowIndex, columnIndex++).date(new Date(data)).style({ numberFormat: 'dd-mm-yyyy' });;
+                if (column.type === 'DATE' && value) {
+                    ws.cell(rowIndex, columnIndex++).date(new Date(value)).style({ numberFormat: 'dd-mm-yyyy' });
                 } else {
-                    ws.cell(rowIndex, columnIndex++).string(data || '');
+                    ws.cell(rowIndex, columnIndex++).string(value || '').style({
+                        alignment: {
+                            wrapText: true,
+                        }
+                    });
                 }
             });
 
@@ -183,10 +193,21 @@ export default class ExcelService {
                 case 'DATE':
                     data = row?.[mapperObj?.key] || null;
                     break;
-            }
-        })
+                case 'ARRAY_KEYS':
+                    const resArr = this._getPropByString(row, mapperObj.key);
+                    const resStrArr = resArr?.map((x: any, index: number) => {
+                        let res = '';
+                        mapperObj.keys.forEach((k: string, index: number) => {
+                            res += `${index != 0 ? ' - ' : ' '} ${x[k] || 'NA'}`;
+                        });
+                        return `${index + 1}. ${res?.trim()}`;
+                    });
 
-        return data;
+                    data += resStrArr ? resStrArr?.join('\n') : '';
+                    break;
+            }
+        });
+        return data || '';
     }
 
     private _getPropByString(obj: any, propString: string) {
