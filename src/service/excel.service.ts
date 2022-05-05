@@ -98,7 +98,7 @@ export default class ExcelService {
                         'appliedCountry',
                         'appliedUni'
                     ],
-                    "joinby": '-'
+                    "joinby": ' - '
                 }]
             }
         ];
@@ -198,7 +198,7 @@ export default class ExcelService {
                     const resStrArr = resArr?.map((x: any, index: number) => {
                         let res = '';
                         mapperObj.keys.forEach((k: string, index: number) => {
-                            res += `${index != 0 ? ' - ' : ' '} ${x[k] || 'NA'}`;
+                            res += `${index != 0 ? mapperObj.joinby || ' - ' : ' '} ${x[k] || 'NA'}`;
                         });
                         return `${index + 1}. ${res?.trim()}`;
                     });
