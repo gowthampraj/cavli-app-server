@@ -197,8 +197,8 @@ export default class ClientServiceInfoTask {
                         let: { 'clientId': '$clientId' },
                         pipeline: [
                             { "$addFields": { "articleId": { "$toString": "$_id" } } },
-                            { "$match": { "$expr": { "$eq": ["$articleId", "$$clientId"] } } }
-                            , { "$project": { 'firstName': 1, 'lastName': 1, 'middleName': 1, 'isActive': 1 } }
+                            { "$match": { "$expr": { "$eq": ["$articleId", "$$clientId"] } } },
+                            { "$project": { 'firstName': 1, 'lastName': 1, 'middleName': 1, 'isActive': 1 } }
                         ],
                         as: 'clientInfo'
                     }

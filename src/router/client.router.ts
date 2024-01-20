@@ -30,6 +30,12 @@ export default class ClientRouter {
         });
 
         /**
+         * get all client list ?isActive=true/false
+         */
+        this.router.get('/enquiry', (req: Request, res: Response) => {
+            clientService.getAllEnquiry(req, res);
+        });
+        /**
         * get all client list ?isActive=true/false
         */
         this.router.get('/dashboard', (req: Request, res: Response) => {

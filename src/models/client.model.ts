@@ -1,3 +1,5 @@
+import { ClientType } from "../enums/client-type.enum";
+
 export class ClientModel {
     _id?: string;
     ackNo?: string;
@@ -25,6 +27,7 @@ export class ClientModel {
     modifiedAt?: Date;
     lastContacted?: Date;
     emergencyContact: Contact;
+    type: ClientType;
     constructor(input: ClientModel) {
         if (input._id)
             this._id = input._id;
@@ -53,6 +56,7 @@ export class ClientModel {
         this.modifiedBy = input.modifiedBy;
         this.lastContacted = input.lastContacted;
         this.emergencyContact = new Contact(input?.emergencyContact)
+        this.type = input.type;
     }
 }
 

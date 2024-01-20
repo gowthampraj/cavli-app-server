@@ -57,6 +57,29 @@ export default class ClientService {
             });
     }
 
+    public getAllEnquiry(req: Request, res: Response) {
+        this.clientTask.getAllEnquiry(req.query)
+            .then((response: any) => {
+                const responseData: ResponseModel = {
+                    status: 'Success',
+                    code: 200,
+                    data: response?.data ?? [],
+                    page: response.page
+                }
+                // logging.info(NAMESPACE, `ClientService.getAll ${JSON.stringify(responseData)}`);
+                return res.status(200).json(responseData)
+            })
+            .catch((err: any) => {
+                const errorData: ResponseModel = {
+                    status: 'Fail',
+                    code: 500,
+                    data: err ?? 'Internal Server error',
+                }
+                logging.warn(NAMESPACE, `ClientService.getAll ${JSON.stringify(err)}`);
+                return res.status(500).json(errorData)
+            });
+    }
+
     public getById(req: Request, res: Response) {
         this.clientTask.getById(req.params.clientId)
             .then((response: any) => {

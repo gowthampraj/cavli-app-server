@@ -8,6 +8,7 @@ import CommentTask from './comment.task';
 import { AggregationCursor } from 'mongoose';
 import { URLSearchParams } from 'url';
 import ClientServiceInfoTask from './client-service-info.task';
+import { ClientType } from '../enums/client-type.enum';
 const NAMESPACE = 'CLIENT';
 const COLLECTION_NAME_CLIENT = 'client';
 
@@ -19,6 +20,10 @@ export default class ClientTask {
     constructor() {
         this.mongoConnection = DbClient.getInstance();
         this.commentTask = new CommentTask();
+
+        setTimeout(() => {
+            this.getAllEnquiry({ size: 10, page: 1 })
+        }, 0);
     }
     create(data: any) {
         const self = this;
@@ -63,6 +68,91 @@ export default class ClientTask {
 
     }
 
+    getAllEnquiry(fields: any) {
+
+        const field: { [key: string]: any } = {
+            type: ClientType.ENQUIRY
+        };
+
+        if (fields?.isActive) {
+            field.isActive = fields?.isActive == true || fields?.isActive == 'true'
+        }
+
+        /**
+         * give direct field only
+         */
+        const fieldArray = ['company', 'status'];
+        fieldArray.forEach(x => {
+            if (fields[x]) {
+                field[x] = fields[x];
+            }
+        });
+        const { size = 10, page = 1 } = fields;
+        const skip = (page - 1) * size;
+        const createdAt = JSON.parse(fields.createdAt || '{}');
+        let createdAtQuery = {}
+        if (createdAt.startDate && createdAt.endDate) {
+            createdAtQuery = {
+                "createdAt": { $gte: createdAt.startDate, $lte: createdAt.endDate }
+            }
+        }
+        const query = [
+            { $match: { ...createdAtQuery, ...field } },
+            { $sort: { createdAt: -1 } },
+            {
+                $project: {
+                    "_id": {
+                        "$toString": "$_id"
+                    },
+                    firstName: 1,
+                    middleName: 1,
+                    lastName: 1,
+                    emailIds: 1,
+                    contactNumber: 1,
+                    isActive: 1,
+                    createdAt: 1,
+                    ackNo: 1,
+                    type: 1
+                }
+            },
+            {
+                $facet: {
+                    data: [{ $skip: skip }, { $limit: parseInt(size) }],
+                    total: [
+                        {
+                            $count: 'total'
+                        }
+                    ]
+                }
+            }
+        ]
+        return new Promise((resolve, reject) => {
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_CLIENT).aggregate(
+                            query
+                            , async (err: any, data: AggregationCursor) => {
+                                if (err) {
+                                    reject(JSON.stringify(err));
+                                } else {
+                                    const result = await data.next();
+                                    result.page = result?.total[0] || { total: 0 };
+                                    result.page.size = parseInt(size);
+                                    result.page.page = parseInt(page);
+                                    resolve(result);
+                                }
+                            }
+                        )
+                    } catch (error) {
+                        reject(JSON.stringify(error));
+                        logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
+    }
+
     getAll(fields?: any, isExport?: boolean) {
 
         const extraProj = isExport ? { permanentAddress: 1, mailingAddress: 1, gender: 1, status: 1, passport: 1, nationality: 1, emergencyContact: 1, lastContacted: 1 } : {}
@@ -76,7 +166,9 @@ export default class ClientTask {
         } : {
             "serviceInfo.interestedCourse": 1
         }
-        const field: { [key: string]: any } = {};
+        const field: { [key: string]: any } = {
+            type: ClientType.CLIENT
+        };
 
         if (fields?.isActive) {
             field.isActive = fields?.isActive == true || fields?.isActive == 'true'
@@ -86,7 +178,6 @@ export default class ClientTask {
          * give direct field only
          */
         const fieldArray = ['company', 'status'];
-
         fieldArray.forEach(x => {
             if (fields[x]) {
                 field[x] = fields[x];
