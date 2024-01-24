@@ -28,6 +28,7 @@ export class ClientModel {
     lastContacted?: Date;
     emergencyContact: Contact;
     type: ClientType;
+    preferredCountry: string[]
     constructor(input: ClientModel) {
         if (input._id)
             this._id = input._id;
@@ -57,6 +58,7 @@ export class ClientModel {
         this.lastContacted = input.lastContacted;
         this.emergencyContact = new Contact(input?.emergencyContact)
         this.type = input.type;
+        this.preferredCountry = input.preferredCountry ?? [];
     }
 }
 

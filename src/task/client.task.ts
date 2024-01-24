@@ -415,7 +415,9 @@ export default class ClientTask {
                                                 {
                                                     clientId: payLoad._id,
                                                     createdAt: payLoad?.modifiedAt ?? new Date(),
-                                                    createdBy: payLoad.modifiedBy ?? 'UNKNOWN',
+                                                    createdBy: payLoad.modifiedBy ?? 'UNKNOWN xx',
+                                                    // createdId: payLoad.modifiedId,
+                                                    // company: payLoad.company,
                                                     type: CommentType.EDIT_CLIENT,
                                                 }
                                             )
