@@ -149,6 +149,30 @@ export default class ClientService {
             });
     }
 
+    
+    public changeTypeToClient(req: Request, res: Response) {
+        this.clientTask.changeTypeToClient(req.body)
+            .then((response: any) => {
+                const responseData: ResponseModel = {
+                    status: 'Success',
+                    code: response?.status ?? 200,
+                    message: response?.msg
+                }
+                // logging.info(NAMESPACE, `ClientService.delete ${JSON.stringify(responseData)}`);
+                return res.status(200).json(responseData)
+            })
+            .catch((err: any) => {
+                const errorData: ResponseModel = {
+                    status: 'Fail',
+                    code: 500,
+                    data: err ?? 'Internal Server error',
+                }
+                logging.error(NAMESPACE, `ClientService.delete ${JSON.stringify(err)}`);
+                return res.status(500).json(errorData)
+            });
+    }
+
+
     /**
      * getDashboard
      */

@@ -70,6 +70,12 @@ export default class ClientRouter {
             clientService.delete(req, res);
         });
 
+        /**
+        * change to client
+        */
+        this.router.patch('/change-to-client', (req: Request, res: Response) => {
+            clientService.changeTypeToClient(req, res);
+        });
 
     }
 }

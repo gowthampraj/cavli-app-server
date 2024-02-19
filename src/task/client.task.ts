@@ -20,10 +20,6 @@ export default class ClientTask {
     constructor() {
         this.mongoConnection = DbClient.getInstance();
         this.commentTask = new CommentTask();
-
-        setTimeout(() => {
-            this.getAllEnquiry({ size: 10, page: 1 })
-        }, 0);
     }
     create(data: any) {
         const self = this;
@@ -415,10 +411,76 @@ export default class ClientTask {
                                                 {
                                                     clientId: payLoad._id,
                                                     createdAt: payLoad?.modifiedAt ?? new Date(),
-                                                    createdBy: payLoad.modifiedBy ?? 'UNKNOWN xx',
+                                                    createdBy: payLoad.modifiedBy ?? 'UNKNOWN',
                                                     // createdId: payLoad.modifiedId,
                                                     // company: payLoad.company,
                                                     type: CommentType.EDIT_CLIENT,
+                                                }
+                                            )
+                                            self.createComment(commentPayload);
+                                        }
+
+                                    } else resolve({ status: 400, msg: "Nothing to update" });
+                                } else {
+                                    resolve({ status: 404, msg: 'No match found' });
+                                }
+                            });
+                    } catch (error) {
+                        logging.info(NAMESPACE, `Unable to connect to db :`, JSON.stringify(error));
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
+
+    }
+
+    changeTypeToClient(data: {
+        createdAt: string;
+        createdBy: string;
+        clientId: string;
+        createdId: string;
+    }) {
+
+        return new Promise((resolve, reject) => {
+            const self = this;
+            if (!data || Object.keys(data).length === 0) {
+                reject('Body is required');
+            }
+
+            const {
+                createdAt,
+                createdBy,
+                clientId,
+                createdId,
+            } = data
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_CLIENT).updateOne(
+                            { _id: new ObjectID(clientId) },
+                            {
+                                $set: {
+                                    type: ClientType.CLIENT,
+                                    status: null
+                                }
+                            },
+                            { upsert: false }
+                            ,
+                            function (err: any, res: any) {
+                                if (res.matchedCount) {
+                                    if (res.matchedCount === res.modifiedCount) {
+                                        resolve({ status: 200, msg: "Updated", id: clientId });
+                                        /**
+                                         * edit Comment
+                                         */
+                                        if (clientId) {
+                                            const commentPayload = new CommentModel(
+                                                {
+                                                    clientId: clientId,
+                                                    createdAt,
+                                                    createdBy,
+                                                    createdId,
+                                                    type: CommentType.SWITCH_TO_CLIENT,
                                                 }
                                             )
                                             self.createComment(commentPayload);

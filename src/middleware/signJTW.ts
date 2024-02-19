@@ -22,7 +22,7 @@ const signJWT = (user: any, callback: (error: Error | null, token: string | null
                 algorithm: 'HS256',
                 expiresIn: expirationTimeInSeconds
             },
-            (error, token) => {
+            (error: any, token: any) => {
                 if (error) {
                     callback(error, null);
                 } else if (token) {
@@ -30,7 +30,7 @@ const signJWT = (user: any, callback: (error: Error | null, token: string | null
                 }
             }
         );
-    } catch (error) {
+    } catch (error: any) {
         logging.error(NAMESPACE, error.message, error);
         callback(error, null);
     }
