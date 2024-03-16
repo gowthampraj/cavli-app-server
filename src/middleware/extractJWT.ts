@@ -3,8 +3,8 @@ import config from '../config/config';
 import logging from '../config/logging';
 import { Request, Response, NextFunction } from 'express';
 import UserTask from '../task/user.task';
-import { Cursor, ObjectID, ObjectId } from 'mongodb';
-import { UserModel, UserRoles } from '../models/user.model';
+import { ObjectID } from 'mongodb';
+import { UserModel } from '../models/user.model';
 
 
 const NAMESPACE = 'AUTH';

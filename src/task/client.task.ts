@@ -655,4 +655,57 @@ export default class ClientTask {
         this.commentTask.create(comment)
     }
 
+    async changeAllToClient() {
+        return new Promise((resolve, reject) => {
+            const self = this;
+            this.mongoConnection.connect()
+                .then((connection: any) => {
+                    try {
+                        connection.collection(COLLECTION_NAME_CLIENT).find({},
+                            function (err: any, users: Cursor) {
+                                users.toArray()
+                                    .then((userList: ClientModel[]) => {
+                                        if (userList?.length) {
+                                            for (const user of userList) {
+
+                                                self.mongoConnection.connect()
+                                                    .then((connection: any) => {
+                                                        try {
+                                                            connection.collection(COLLECTION_NAME_CLIENT).updateOne(
+                                                                { _id: new ObjectID(user._id) },
+                                                                {
+                                                                    $set: {
+                                                                        type: ClientType.ENQUIRY,
+                                                                        status: null
+                                                                    }
+                                                                },
+                                                                { upsert: false }
+                                                                ,
+                                                                function (err: any, res: any) {
+                                                                    if (res.matchedCount) {
+                                                                        resolve({ status: 200, msg: 'converted' })
+                                                                    } else {
+                                                                        resolve({ status: 404, msg: 'No match found' });
+                                                                    }
+                                                                });
+                                                        } catch (error) {
+                                                            logging.info(NAMESPACE, `Unable to connect to db :`, JSON.stringify(error));
+                                                        }
+                                                    })
+                                                    .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+
+                                            }
+                                            // resolve(userList[0]);
+                                        } else {
+                                            reject(`No Client found`);
+                                        }
+                                    });
+                            });
+                    } catch (error) {
+                        logging.error(NAMESPACE, 'UserService.getAll', JSON.stringify(error));
+                    }
+                })
+                .catch((err: any) => reject(`DB connection Error : ${JSON.stringify(err)}`));
+        });
+    }
 }

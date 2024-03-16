@@ -77,5 +77,11 @@ export default class ClientRouter {
             clientService.changeTypeToClient(req, res);
         });
 
+        /**
+         * change to all to client
+         */
+        this.router.patch('/change-to-all-client', (req: Request, res: Response) => {
+            clientService.changeAllToClient(req, res);
+        });
     }
 }
