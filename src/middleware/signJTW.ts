@@ -5,10 +5,7 @@ import logging from '../config/logging';
 const NAMESPACE = 'AUTH SIGN JWT';
 
 const signJWT = (user: any, callback: (error: Error | null, token: string | null) => void): void => {
-    var timeSinceEpoch = new Date().getTime();
-    var expirationTime = timeSinceEpoch + Number(config.server.token.expireTime) * 100000;
-    var expirationTimeInSeconds = Math.floor(expirationTime / 1000);
-
+    
     logging.info(NAMESPACE, `Attempting to sign token for ${user._id}`);
 
     try {
@@ -20,7 +17,7 @@ const signJWT = (user: any, callback: (error: Error | null, token: string | null
             {
                 issuer: config.server.token.issuer,
                 algorithm: 'HS256',
-                expiresIn: expirationTimeInSeconds
+                expiresIn: "8 hour"
             },
             (error: any, token: any) => {
                 if (error) {

@@ -72,9 +72,8 @@ const extractJWT = async (req: Request, res: Response, next: NextFunction) => {
     if (token) {
         jwt.verify(token, config.server.token.secret, (error, decoded) => {
             if (error) {
-                return res.status(404).json({
-                    message: error,
-                    error
+                return res.status(401).json({
+                    message: 'Re login needed'
                 });
             } else {
                 res.locals.jwt = decoded;
