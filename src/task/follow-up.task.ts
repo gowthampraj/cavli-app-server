@@ -2,7 +2,7 @@ import DbClient = require('../mongoclient');
 import { Cursor, ObjectID, ObjectId } from 'mongodb';
 import logging from '../config/logging';
 import { removeId } from '../utils/utils';
-import { FollowUp } from '../models/follow-up';
+import { FollowUp } from '../models/follow-up.model';
 import CommentTask from './comment.task';
 import { CommentModel, CommentType } from '../models/comment.model';
 
@@ -242,7 +242,6 @@ export default class FollowUpTask {
         });
 
     }
-
 
     async createComment(comment: CommentModel) {
         await this.commentTask.create(comment)

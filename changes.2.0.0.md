@@ -1,14 +1,7 @@
-# Client
-- add client type, also add in get api
-- add client status Active / Deleted / Hibernative etc..
-
-- enq to client ==>  remove status also
+add company code in follow up also
 
 
-# DB changes
-## 
-- new field added in client - type
-- new db client-follow-up
+on delete client / enquiry ?? action need to to done
 
 # Notes
 - router guard

@@ -16,7 +16,7 @@ const signJWT = (user: any, callback: (error: Error | null, token: string | null
             config.server.token.secret,
             {
                 issuer: config.server.token.issuer,
-                algorithm: 'HS256',
+                algorithm: 'HS512',
                 expiresIn: "8 hour"
             },
             (error: any, token: any) => {

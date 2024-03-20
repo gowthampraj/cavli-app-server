@@ -1,5 +1,6 @@
 export class FollowUp {
     _id?: string;
+    company?: string;
     clientId: string;
     createdAt: string;
     createdBy: string;
@@ -16,6 +17,7 @@ export class FollowUp {
     constructor(i: FollowUp) {
         if (i._id)
             this._id = i._id;
+        this.company = i.company;
         this.clientId = i.clientId;
         this.createdAt = i.createdAt;
         this.createdBy = i.createdBy;
