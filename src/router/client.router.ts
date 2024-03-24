@@ -76,12 +76,5 @@ export default class ClientRouter {
         this.router.patch('/change-to-client', (req: Request, res: Response) => {
             clientService.changeTypeToClient(req, res);
         });
-
-/**
-         * change to all to client
-         */
-        // this.router.patch('/add-company-to-follow-up', (req: Request, res: Response) => {
-        //     clientService.addCompanyToFollowUp(req, res);
-        // });
     }
 }

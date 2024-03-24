@@ -220,25 +220,4 @@ export default class ClientService {
             });
     }
 
-// v2.0.0
-    // public addCompanyToFollowUp(req: Request, res: Response) {
-    //     this.clientTask.addCompanyToFollowUp()
-    //         .then((response: any) => {
-    //             const responseData: ResponseModel = {
-    //                 status: 'Success',
-    //                 code: response?.status ?? 200,
-    //                 message: response?.msg
-    //             }
-    //             return res.status(200).json(responseData)
-    //         })
-    //         .catch((err: any) => {
-    //             const errorData: ResponseModel = {
-    //                 status: 'Fail',
-    //                 code: 500,
-    //                 data: err ?? 'Internal Server error',
-    //             }
-    //             logging.error(NAMESPACE, `ClientService.getDashboard ${JSON.stringify(err)}`);
-    //             return res.status(500).json(errorData)
-    //         });
-    // }
 }

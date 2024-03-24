@@ -9,6 +9,7 @@ import { AggregationCursor } from 'mongoose';
 import { URLSearchParams } from 'url';
 import ClientServiceInfoTask from './client-service-info.task';
 import { ClientType } from '../enums/client-type.enum';
+import { FollowUp } from '../models/follow-up.model';
 const NAMESPACE = 'CLIENT';
 const COLLECTION_NAME_CLIENT = 'client';
 
@@ -662,10 +663,4 @@ export default class ClientTask {
         this.commentTask.create(comment)
     }
 
-    // addCompanyToFollowUp() {
-    //     const followUp
-    //     return new Promise((resolve, reject) => {
-    //     /** Get follow up */
-    //     });
-    // }
 }
