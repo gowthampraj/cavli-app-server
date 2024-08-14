@@ -15,7 +15,7 @@ import ExportRouter from './router/export.router';
 import ExtraRouter from './router/extra.router';
 import NotificationRouter from './router/notification.router';
 import FollowUpRouter from './router/follow-up.router';
-
+import invoiceRouter from './router/invoice.router'
 export default class ServerRoute {
     private static instance: ServerRoute
 
@@ -34,6 +34,7 @@ export default class ServerRoute {
     private extraRouter: ExtraRouter;
     private notificationRouter: NotificationRouter;
     private followUpRouter: FollowUpRouter;
+    private invoiceRouter : invoiceRouter;
     private constructor() {
         this.clientRouter = new ClientRouter();
         this.clientServiceInfoRouter = new ClientServiceInfoRouter();
@@ -50,6 +51,7 @@ export default class ServerRoute {
         this.extraRouter = new ExtraRouter();
         this.notificationRouter = new NotificationRouter();
         this.followUpRouter = new FollowUpRouter();
+        this.invoiceRouter = new invoiceRouter();
     }
 
     public static getInstance(): ServerRoute {
@@ -95,6 +97,10 @@ export default class ServerRoute {
          */
         expressApp.use('/export', this.exportRouter.router);
 
+        /**
+         * Invoice
+         */
 
+        expressApp.use('/invoice', this.invoiceRouter.router);
     }
 }
