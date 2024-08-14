@@ -29,6 +29,7 @@ export default class invoiceRouter {
         this.router.get('/', (req: Request, res: Response) => {
             invoiceService.getAll(req, res);
         });
+        
 
         this.router.patch('/updateaction/:invoiceId', (req: Request, res: Response) => {
            invoiceService.updateAction(req, res);
