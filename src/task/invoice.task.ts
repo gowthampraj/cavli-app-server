@@ -109,6 +109,7 @@ export default class invoiceTask {
                     const result = await connection.collection(COLLECTION_NAME_INVOICE).updateOne(
                         { _id: new ObjectId(invoiceId) },
                         { $set: { isDeleted: true } }
+                        
                     );
 
                     if (result.modifiedCount === 1) {

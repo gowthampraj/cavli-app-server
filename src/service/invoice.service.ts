@@ -98,6 +98,7 @@ export default class InvoiceService {
             }
             logging.info(NAMESPACE, 'UserService.getAll', JSON.stringify(responseData));
             return res.status(200).json(responseData)
+            
         })
         .catch((err: any) => {
             const errorData: ResponseModel = {

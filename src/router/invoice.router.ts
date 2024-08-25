@@ -31,6 +31,7 @@ export default class invoiceRouter {
         });
         
 
+
         this.router.patch('/updateaction/:invoiceId', (req: Request, res: Response) => {
            invoiceService.updateAction(req, res);
         });
